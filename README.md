@@ -79,17 +79,21 @@ Everything respects `prefers-reduced-motion`; the loader and hero entrance are p
 
 ### Add a project
 
-1. In `index.html`, copy one `<article class="project">` block inside `.work__list`.
-2. Update the number, eyebrow, title, description and the `<dl class="project__meta">` rows. Only publish facts you can stand behind.
-3. Pick a layout modifier: `project--split-start`, `project--wide` or `project--split-end` (alternate them).
-4. Visual: either keep a typographic `.project-art` placeholder or replace the `.project-art` div with a real screenshot:
+Featured projects are `<article class="project">` blocks inside `.work__list`; smaller ones are rows in
+`.work-index__list` ("أعمال ثانية").
+
+1. Featured: copy an `<article class="project">`, bump the number, and alternate the layout modifier
+   (`project--split-start`, `project--wide`, `project--split-end`, or `project--app` for two phone screens).
+2. Put the screenshot in `assets/projects/` (see its README) and reference it:
    ```html
-   <img class="project__image" src="assets/projects/my-project-01.webp" width="2400" height="1500"
-        alt="وصف عربي للصورة" loading="lazy" decoding="async">
+   <img class="project__image" src="assets/projects/my-project-01.webp" width="1600" height="1000"
+        loading="lazy" decoding="async" alt="وصف عربي للصورة">
    ```
-   (`.project__image` should fill the frame with `object-fit: cover` — add the rule in `_sections.scss` when adding the first screenshot.)
-5. Live link: each CTA (`عرض المشروع`) has a placeholder href such as `__HAMESH_URL__` — replace it with the real URL.
-   Until then `main.js` keeps the link inert (`aria-disabled`), so a placeholder never ships as a live link.
+3. Keep the `<dl class="project__meta">` to النوع / الدور / السنة — only facts you can stand behind.
+4. The CTA (`عرض المشروع`) is a normal external link (`target="_blank" rel="noopener noreferrer"`).
+   A project with no public URL simply has no CTA.
+5. Smaller project: copy a `<li class="work-index__item">`; drop the `.work-index__link` if there is no URL.
+6. Update the count in the section code (`INDEX / 07 PROJECTS`).
 
 ### Contact & social links
 

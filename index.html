@@ -282,19 +282,18 @@
     </section>
 
     <!-- 04 / Selected work
-         HOW TO ADD A PROJECT: duplicate one <article class="project"> block,
-         bump the number, pick a layout modifier (project--split-start,
-         project--wide, project--split-end) and either keep a typographic
-         .project-art placeholder or replace it with a real screenshot:
-         <img class="project__image" src="assets/projects/NAME.webp"
-              width="2400" height="1500" alt="وصف عربي للصورة" loading="lazy">
-         Project links: replace the __PROJECT_URL__ placeholder in each CTA href.
-         Until then main.js keeps the link inert (aria-disabled). -->
+         FEATURED PROJECTS (<article class="project">): duplicate a block, bump the
+         number, pick a layout modifier (project--split-start, project--wide,
+         project--split-end, project--app for phone screenshots) and point the
+         <img class="project__image"> at a screenshot in assets/projects/
+         (WebP, 1600×1000, Arabic alt text, width/height attributes, loading="lazy").
+         MORE WORK (<li class="work-index__item">): one row per smaller project.
+         A project without a public URL simply has no CTA / arrow link. -->
     <section class="section work" id="work" data-theme="dark" aria-labelledby="work-title">
       <div class="section__inner">
         <header class="section-head" data-reveal>
           <p class="section-head__label"><span class="section-head__num" lang="en">02</span><span class="section-head__slash">/</span><span>أعمال مختارة</span></p>
-          <p class="section-head__code" lang="en" dir="ltr">INDEX / 03 PROJECTS</p>
+          <p class="section-head__code" lang="en" dir="ltr">INDEX / 07 PROJECTS</p>
         </header>
 
         <h2 class="work__title" id="work-title" data-reveal>
@@ -304,65 +303,48 @@
 
         <div class="work__list">
 
-          <!-- Project 01 — visual beside text -->
-          <article class="project project--split-start" aria-labelledby="project-01-title" data-project>
+          <!-- Project 01 — own product -->
+          <article class="project project--split-start" aria-labelledby="project-01-title">
             <div class="project__info" data-reveal>
               <p class="project__number" lang="en">01</p>
               <p class="project__eyebrow" lang="en" dir="ltr">RESUME NEEDED</p>
               <h3 class="project__title" id="project-01-title">مطلوب سيرة ذاتية</h3>
-              <p class="project__desc">منصة لإنشاء السير الذاتية وتحليلها، وقياس توافقها مع أنظمة <span lang="en">ATS</span>.</p>
+              <p class="project__desc">منصة عربية تبني فيها سيرتك الذاتية خطوة بخطوة، تفحص توافقها مع أنظمة <span lang="en">ATS</span>، وتحمّلها <span lang="en">PDF</span> أو تشاركها برابط.</p>
               <dl class="project__meta">
-                <div class="project__meta-row"><dt>النوع</dt><dd><span lang="en">SaaS</span> / منصة ويب</dd></div>
-                <div class="project__meta-row"><dt>الدور</dt><dd>المنتج والهندسة</dd></div>
-                <div class="project__meta-row"><dt>التقنيات</dt><dd lang="en" dir="ltr">Laravel / Filament / Redis</dd></div>
+                <div class="project__meta-row"><dt>النوع</dt><dd>منصة ويب <span lang="en">SaaS</span></dd></div>
+                <div class="project__meta-row"><dt>الدور</dt><dd>منتجي — من الفكرة للإطلاق</dd></div>
+                <div class="project__meta-row"><dt>السنة</dt><dd lang="en">2026</dd></div>
               </dl>
-              <a class="link-arrow project__cta" href="__RESUME_NEEDED_URL__" target="_blank" rel="noopener noreferrer" data-config-link>
+              <a class="link-arrow project__cta" href="https://resume-needed.cloud" target="_blank" rel="noopener noreferrer">
                 <span>عرض المشروع</span>
                 <svg class="icon" aria-hidden="true"><use href="#icon-arrow-out"/></svg>
               </a>
             </div>
 
-            <figure class="project__visual" data-reveal data-project-visual>
-              <div class="project-art project-art--resume" aria-hidden="true">
-                <div class="project-art__doc">
-                  <span class="project-art__doc-head"></span>
-                  <span class="project-art__doc-line"></span>
-                  <span class="project-art__doc-line"></span>
-                  <span class="project-art__doc-line project-art__doc-line--short"></span>
-                  <span class="project-art__doc-line"></span>
-                  <span class="project-art__doc-line project-art__doc-line--short"></span>
-                  <span class="project-art__doc-line"></span>
-                  <span class="project-art__scan"></span>
-                </div>
-                <span class="project-art__word" lang="en">ATS</span>
-                <span class="project-art__tag" lang="en" dir="ltr">CV / PARSE / MATCH</span>
-              </div>
-              <figcaption class="project__caption" lang="en" dir="ltr">FIG. 01 — RESUME NEEDED</figcaption>
+            <figure class="project__visual" data-reveal>
+              <img class="project__image" src="assets/projects/resume-needed-01.webp" width="1600" height="1000" loading="lazy" decoding="async" alt="الصفحة الرئيسية لمنصة مطلوب سيرة ذاتية مع عبارة أنشئ سيرتك الذاتية باحترافية">
+              <figcaption class="project__caption" lang="en" dir="ltr">FIG. 01 — RESUME-NEEDED.CLOUD</figcaption>
             </figure>
           </article>
 
           <!-- Project 02 — full-width visual, metadata below -->
-          <article class="project project--wide" aria-labelledby="project-02-title" data-project>
-            <figure class="project__visual" data-reveal data-project-visual>
-              <div class="project-art project-art--hamesh" aria-hidden="true">
-                <span class="project-art__margin"></span>
-                <span class="project-art__word">هامش</span>
-                <span class="project-art__domains" lang="en" dir="ltr">
-                  <span>DOMAIN / A</span><span>DOMAIN / B</span><span>DOMAIN / C</span>
-                </span>
-              </div>
-              <figcaption class="project__caption" lang="en" dir="ltr">FIG. 02 — HAMESH</figcaption>
+          <article class="project project--wide" aria-labelledby="project-02-title">
+            <figure class="project__visual" data-reveal>
+              <img class="project__image" src="assets/projects/teamstein-01.webp" width="1600" height="1000" loading="lazy" decoding="async" alt="الصفحة الرئيسية للعبة تيم شتاين مع عبارة كل سؤال بداية تحدي جديد">
+              <figcaption class="project__caption" lang="en" dir="ltr">FIG. 02 — TEAM-STEIN.SA</figcaption>
             </figure>
 
             <div class="project__info" data-reveal>
               <p class="project__number" lang="en">02</p>
-              <p class="project__eyebrow" lang="en" dir="ltr">HAMESH</p>
-              <h3 class="project__title" id="project-02-title">هامش</h3>
-              <p class="project__desc">منصة ويب واحدة تخدم أكثر من نطاق.</p>
+              <p class="project__eyebrow" lang="en" dir="ltr">TEAM STEIN</p>
+              <h3 class="project__title" id="project-02-title">تيم شتاين</h3>
+              <p class="project__desc">لعبة معلومات عربية بين فريقين على شاشة وحدة: 36 سؤال في 6 فئات، سبع وسائل مساعدة، وفئات تسوّونها بنفسكم.</p>
               <dl class="project__meta">
-                <div class="project__meta-row"><dt>النوع</dt><dd>منصة ويب</dd></div>
+                <div class="project__meta-row"><dt>النوع</dt><dd>لعبة ويب جماعية</dd></div>
+                <div class="project__meta-row"><dt>الدور</dt><dd>التطوير الرئيسي</dd></div>
+                <div class="project__meta-row"><dt>السنة</dt><dd lang="en">2026</dd></div>
               </dl>
-              <a class="link-arrow project__cta" href="__HAMESH_URL__" target="_blank" rel="noopener noreferrer" data-config-link>
+              <a class="link-arrow project__cta" href="https://team-stein.sa" target="_blank" rel="noopener noreferrer">
                 <span>عرض المشروع</span>
                 <svg class="icon" aria-hidden="true"><use href="#icon-arrow-out"/></svg>
               </a>
@@ -370,44 +352,86 @@
           </article>
 
           <!-- Project 03 — split grid, visual on the other side -->
-          <article class="project project--split-end" aria-labelledby="project-03-title" data-project>
+          <article class="project project--split-end" aria-labelledby="project-03-title">
             <div class="project__info" data-reveal>
               <p class="project__number" lang="en">03</p>
-              <p class="project__eyebrow">ألعاب جماعية</p>
-              <h3 class="project__title" id="project-03-title" lang="en" dir="ltr">Teamstein</h3>
-              <p class="project__desc">ألعاب اجتماعية يلعبها الفريق مع بعض.</p>
+              <p class="project__eyebrow" lang="en" dir="ltr">HAMESH</p>
+              <h3 class="project__title" id="project-03-title">هامش للسيارات</h3>
+              <p class="project__desc">منصة معرض سيارات: تصفّح الجديد والمستعمل، اطلب سيارتك لو ما لقيتها، ولوحة تحكم يتابع فيها الفريق كل طلب.</p>
               <dl class="project__meta">
-                <div class="project__meta-row"><dt>النوع</dt><dd>منصة ألعاب</dd></div>
+                <div class="project__meta-row"><dt>النوع</dt><dd>منصة ويب ولوحة تحكم</dd></div>
+                <div class="project__meta-row"><dt>الدور</dt><dd>التطوير الرئيسي</dd></div>
+                <div class="project__meta-row"><dt>السنة</dt><dd lang="en">2024 — 2025</dd></div>
               </dl>
-              <a class="link-arrow project__cta" href="__TEAMSTEIN_URL__" target="_blank" rel="noopener noreferrer" data-config-link>
-                <span>عرض المشروع</span>
-                <svg class="icon" aria-hidden="true"><use href="#icon-arrow-out"/></svg>
-              </a>
             </div>
 
-            <figure class="project__visual" data-reveal data-project-visual>
-              <div class="project-art project-art--teamstein" aria-hidden="true">
-                <span class="project-art__word" lang="en" dir="ltr">TEAM<br>STEIN</span>
-                <span class="project-art__board">
-                  <span></span><span></span><span></span><span></span>
-                  <span></span><span></span><span></span><span></span>
-                  <span></span><span></span><span></span><span></span>
-                </span>
-                <span class="project-art__tag" lang="en" dir="ltr">PLAY / TOGETHER</span>
-              </div>
-              <figcaption class="project__caption" lang="en" dir="ltr">FIG. 03 — TEAMSTEIN</figcaption>
+            <figure class="project__visual" data-reveal>
+              <img class="project__image" src="assets/projects/hamesh-01.webp" width="1600" height="1000" loading="lazy" decoding="async" alt="الصفحة الرئيسية لموقع هامش للسيارات مع إعلان سيارة وطلب سيارة">
+              <figcaption class="project__caption" lang="en" dir="ltr">FIG. 03 — HAMESH.SA</figcaption>
             </figure>
           </article>
+
+          <!-- Project 04 — mobile app: two phone screens -->
+          <article class="project project--app" aria-labelledby="project-04-title">
+            <figure class="project__visual project__visual--phones" data-reveal>
+              <img class="project__phone" src="assets/projects/zad-01.webp" width="800" height="1600" loading="lazy" decoding="async" alt="الشاشة الرئيسية لتطبيق زاد: التاريخ الهجري والصلاة القادمة ومواقيت اليوم">
+              <img class="project__phone" src="assets/projects/zad-02.webp" width="800" height="1600" loading="lazy" decoding="async" alt="شاشة الأذكار في تطبيق زاد">
+              <figcaption class="project__caption" lang="en" dir="ltr">FIG. 04 — ZAD / ANDROID</figcaption>
+            </figure>
+
+            <div class="project__info" data-reveal>
+              <p class="project__number" lang="en">04</p>
+              <p class="project__eyebrow" lang="en" dir="ltr">ZAD</p>
+              <h3 class="project__title" id="project-04-title">زاد</h3>
+              <p class="project__desc">رفيق يومي للصلاة والأذكار والسنن، يحسب المواقيت على جهازك ويضم حصن المسلم كامل. بدون إعلانات ولا حسابات ولا إنترنت.</p>
+              <dl class="project__meta">
+                <div class="project__meta-row"><dt>النوع</dt><dd>تطبيق أندرويد</dd></div>
+                <div class="project__meta-row"><dt>الدور</dt><dd>منتجي — من الفكرة للإطلاق</dd></div>
+                <div class="project__meta-row"><dt>السنة</dt><dd lang="en">2026</dd></div>
+              </dl>
+            </div>
+          </article>
+        </div>
+
+        <!-- More work — compact index rows -->
+        <div class="work-index">
+          <h3 class="work-index__title" data-reveal>أعمال ثانية</h3>
+          <ol class="work-index__list" data-reveal-stagger>
+            <li class="work-index__item" data-reveal>
+              <span class="work-index__num" lang="en">05</span>
+              <p class="work-index__name">ون كار <span class="work-index__latin" lang="en" dir="ltr">OneCar</span></p>
+              <p class="work-index__desc">سوق سيارات سعودي في تطبيق واحد — بنيت أساس النظام الخلفي ولوحة التحكم.</p>
+              <p class="work-index__year" lang="en">2025</p>
+              <a class="work-index__link" href="https://onecar.sa" target="_blank" rel="noopener noreferrer" aria-label="عرض مشروع ون كار">
+                <svg class="icon" aria-hidden="true"><use href="#icon-arrow-out"/></svg>
+              </a>
+            </li>
+            <li class="work-index__item" data-reveal>
+              <span class="work-index__num" lang="en">06</span>
+              <p class="work-index__name">حزّر <span class="work-index__latin" lang="en" dir="ltr">Hizzar</span></p>
+              <p class="work-index__desc">لعبة كلمات عربية يومية: خمّن الكلمة في ست محاولات. مجانية وتشتغل بدون نت.</p>
+              <p class="work-index__year" lang="en">2026</p>
+              <a class="work-index__link" href="https://hizzar.vercel.app" target="_blank" rel="noopener noreferrer" aria-label="عرض مشروع حزّر">
+                <svg class="icon" aria-hidden="true"><use href="#icon-arrow-out"/></svg>
+              </a>
+            </li>
+            <li class="work-index__item" data-reveal>
+              <span class="work-index__num" lang="en">07</span>
+              <p class="work-index__name">شركة فواز الحربي للمحاماة</p>
+              <p class="work-index__desc">موقع الشركة ولوحة تحكم كاملة: العميل يحجز استشارته، والمكتب يتابع الطلبات والرسائل من مكان واحد.</p>
+              <p class="work-index__year" lang="en">2025</p>
+            </li>
+          </ol>
         </div>
       </div>
     </section>
 
-    <!-- 05 / Experience — an overview, not a fabricated CV timeline -->
+    <!-- 05 / Experience — role timeline + areas -->
     <section class="section experience" id="experience" data-theme="light" aria-labelledby="experience-title">
       <div class="section__inner">
         <header class="section-head" data-reveal>
           <p class="section-head__label"><span class="section-head__num" lang="en">03</span><span class="section-head__slash">/</span><span>الخبرة</span></p>
-          <p class="section-head__code" lang="en" dir="ltr">6 AREAS / ~8 YRS</p>
+          <p class="section-head__code" lang="en" dir="ltr">2018 — 2026 / 8 AREAS</p>
         </header>
 
         <div class="experience__head">
@@ -415,16 +439,29 @@
             <span class="experience__title-line">8 سنوات</span>
             <span class="experience__title-line">من البناء.</span>
           </h2>
-          <p class="experience__intro" data-reveal>بدل سيرة ذاتية طويلة، هذي المجالات اللي اشتغلت فيها خلال السنين الماضية.</p>
+          <p class="experience__intro" data-reveal>من سنة تخرجي وأنا أبني أنظمة في سدايا، وجنبها منتجاتي الخاصة ومشاريع لعملاء.</p>
         </div>
 
+        <ol class="timeline" data-reveal-stagger>
+          <li class="timeline__item" data-reveal>
+            <p class="timeline__period"><span lang="en">2018</span> — الآن</p>
+            <h3 class="timeline__role">مهندس برمجيات</h3>
+            <p class="timeline__org">الهيئة السعودية للبيانات والذكاء الاصطناعي — سدايا</p>
+          </li>
+          <li class="timeline__item" data-reveal>
+            <p class="timeline__period"><span lang="en">2024</span> — الآن</p>
+            <h3 class="timeline__role">منتجات خاصة ومشاريع لعملاء</h3>
+            <p class="timeline__org">عمل حر</p>
+          </li>
+        </ol>
+
         <div class="ruler" aria-hidden="true" data-reveal>
-          <span class="ruler__label ruler__label--start" lang="en" dir="ltr">YR 00</span>
+          <span class="ruler__label ruler__label--start" lang="en" dir="ltr">2018</span>
           <span class="ruler__scale">
             <span></span><span></span><span></span><span></span>
             <span></span><span></span><span></span><span></span><span></span>
           </span>
-          <span class="ruler__label ruler__label--end" lang="en" dir="ltr">~ YR 08</span>
+          <span class="ruler__label ruler__label--end" lang="en" dir="ltr">2026</span>
         </div>
 
         <ol class="experience__list" data-reveal-stagger>
@@ -458,6 +495,16 @@
             <h3 class="experience__name">الاستشارات التقنية</h3>
             <p class="experience__desc">أساعد الفرق تختار الحل الصح قبل ما تبدأ.</p>
           </li>
+          <li class="experience__item" data-reveal>
+            <span class="experience__index" lang="en">07</span>
+            <h3 class="experience__name">تطبيقات الجوال</h3>
+            <p class="experience__desc">تطبيقات أندرويد سريعة، تشتغل حتى بدون إنترنت.</p>
+          </li>
+          <li class="experience__item" data-reveal>
+            <span class="experience__index" lang="en">08</span>
+            <h3 class="experience__name">لوحات التحكم</h3>
+            <p class="experience__desc">لوحات تعطي أصحاب الأعمال إدارة كاملة لشغلهم من مكان واحد.</p>
+          </li>
         </ol>
       </div>
     </section>
@@ -467,7 +514,7 @@
       <div class="section__inner">
         <header class="section-head" data-reveal>
           <p class="section-head__label"><span class="section-head__num" lang="en">04</span><span class="section-head__slash">/</span><span>وش أسوي؟</span></p>
-          <p class="section-head__code" lang="en" dir="ltr">5 CAPABILITIES</p>
+          <p class="section-head__code" lang="en" dir="ltr">6 CAPABILITIES</p>
         </header>
 
         <h2 class="capabilities__title" id="capabilities-title" data-reveal>
@@ -505,6 +552,12 @@
             <h3 class="capability__title">من الفكرة للإطلاق</h3>
             <p class="capability__desc">أمسك المشروع من أول نقاش لين يوصل للمستخدم.</p>
             <p class="capability__tags">التخطيط / التطوير / النشر</p>
+          </li>
+          <li class="capability" data-reveal>
+            <span class="capability__index" lang="en">06</span>
+            <h3 class="capability__title">تطبيقات الجوال</h3>
+            <p class="capability__desc">تطبيقات أندرويد أصلية، خفيفة وسريعة، تشتغل حتى بدون إنترنت.</p>
+            <p class="capability__tags" lang="en" dir="ltr">Android / Kotlin</p>
           </li>
         </ol>
       </div>
