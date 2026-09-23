@@ -1,0 +1,128 @@
+// ============================================================
+// Shared mixins. Every partial: @use 'variables' as *; @use 'mixins' as *;
+// ============================================================
+
+@use 'sass:map';
+@use 'variables' as *;
+
+// ---------- Breakpoints ----------
+@mixin up($bp) {
+  @media (min-width: map.get($breakpoints, $bp)) {
+    @content;
+  }
+}
+
+@mixin down($bp) {
+  @media (max-width: (map.get($breakpoints, $bp) - 0.02px)) {
+    @content;
+  }
+}
+
+// Fine pointer + real hover (desktop). Use for hover-only effects.
+@mixin hover {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      @content;
+    }
+  }
+}
+
+@mixin motion-ok {
+  @media (prefers-reduced-motion: no-preference) {
+    @content;
+  }
+}
+
+@mixin reduced-motion {
+  @media (prefers-reduced-motion: reduce) {
+    @content;
+  }
+}
+
+// ---------- Themes ----------
+// Emits the theme's custom properties. Used on [data-theme] sections.
+@mixin theme($name) {
+  $palette: map.get($themes, $name);
+
+  @each $key, $value in $palette {
+    --#{$key}: #{$value};
+  }
+
+  background-color: var(--bg);
+  color: var(--fg);
+}
+
+// ---------- Layout ----------
+@mixin container {
+  width: 100%;
+  max-width: $container-max;
+  margin-inline: auto;
+  padding-inline: $gutter;
+}
+
+@mixin grid($cols: $grid-columns-mobile) {
+  display: grid;
+  grid-template-columns: repeat($cols, minmax(0, 1fr));
+  column-gap: $grid-gap;
+}
+
+// ---------- Typography ----------
+@mixin mono-meta {
+  font-family: $font-mono;
+  font-size: $text-meta;
+  font-weight: $weight-medium;
+  letter-spacing: $tracking-meta;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+@mixin display($size: $text-display) {
+  font-size: $size;
+  font-weight: $weight-bold;
+  line-height: $leading-display;
+  letter-spacing: 0;
+}
+
+// ---------- Neo-brutalist primitives ----------
+@mixin hard-shadow($offset: $shadow-offset, $color: var(--shadow)) {
+  // Negative X = falls toward inline-end (left) in RTL.
+  box-shadow: calc(#{$offset} * -1) $offset 0 0 $color;
+}
+
+@mixin press($offset: $shadow-offset, $color: var(--shadow)) {
+  @include hard-shadow($offset, $color);
+
+  transform: translate(0, 0);
+  transition:
+    transform $transition-fast $ease-snap,
+    box-shadow $transition-fast $ease-snap,
+    background-color $transition-fast linear,
+    color $transition-fast linear;
+
+  @include hover {
+    transform: translate(calc(#{$offset} * -0.4), calc(#{$offset} * 0.4));
+    box-shadow: calc(#{$offset} * -0.6) calc(#{$offset} * 0.6) 0 0 $color;
+  }
+
+  &:active {
+    transform: translate(calc(#{$offset} * -1), $offset);
+    box-shadow: 0 0 0 0 $color;
+  }
+}
+
+@mixin focus-ring($color: var(--accent), $offset: 3px) {
+  outline: $border-heavy solid $color;
+  outline-offset: $offset;
+}
+
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}

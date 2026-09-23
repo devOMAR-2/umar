@@ -1,0 +1,21 @@
+{
+  "name": "omar-alfarraj-portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Personal portfolio of Omar Alfarraj — Arabic-first, RTL, HTML + SCSS + vanilla JS.",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "watch": "sass --watch scss/main.scss css/main.css",
+    "build": "sass scss/main.scss css/main.css --style=compressed --no-source-map",
+    "serve": "node scripts/serve.mjs",
+    "fonts": "node scripts/copy-fonts.mjs"
+  },
+  "devDependencies": {
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "@fontsource/ibm-plex-sans-arabic": "^5.3.0",
+    "sass": "^1.93.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

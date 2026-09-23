@@ -1,0 +1,153 @@
+// ============================================================
+// Design tokens — single source of truth.
+// Brand blue / navy / ink are taken from the supplied logo SVGs
+// (assets/brand/logo/omar_logo-03 / -02 / -01).
+// ============================================================
+
+@use 'sass:map';
+
+// ---------- Colors ----------
+$color-blue: #1b52d8;        // brand azure (logo 03)
+$color-navy: #021b8b;        // brand royal / dark navy (logo 02)
+$color-black: #0a0a0a;
+$color-off-black: #151515;
+$color-white: #ffffff;
+$color-off-white: #f4f3ee;
+$color-gray: #b8bbc5;
+$color-gray-dark: #55586a;   // muted text on off-white (AA on #f4f3ee)
+$color-line-dark: #2c2c2c;   // hairline grid lines on black
+
+// Theme palettes. Each section declares data-theme="light|dark|blue";
+// components read the resulting CSS custom properties, never raw colors.
+$themes: (
+  light: (
+    bg: $color-off-white,
+    fg: $color-black,
+    muted: $color-gray-dark,
+    accent: $color-blue,
+    line: $color-black,
+    line-soft: rgba($color-black, 0.12),
+    surface: $color-white,
+    invert-bg: $color-black,
+    invert-fg: $color-off-white,
+    shadow: $color-black,
+  ),
+  dark: (
+    bg: $color-black,
+    fg: $color-off-white,
+    muted: $color-gray,
+    accent: $color-blue,
+    line: $color-off-white,
+    line-soft: $color-line-dark,
+    surface: $color-off-black,
+    invert-bg: $color-off-white,
+    invert-fg: $color-black,
+    shadow: $color-blue,
+  ),
+  blue: (
+    bg: $color-blue,
+    fg: $color-white,
+    muted: $color-off-white,
+    accent: $color-black,
+    line: $color-black,
+    line-soft: rgba($color-black, 0.22),
+    surface: $color-navy,
+    invert-bg: $color-black,
+    invert-fg: $color-white,
+    shadow: $color-black,
+  ),
+);
+
+// ---------- Typography ----------
+$font-sans: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, system-ui, sans-serif;
+$font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Consolas, monospace;
+
+$weight-regular: 400;
+$weight-medium: 500;
+$weight-semibold: 600;
+$weight-bold: 700;
+
+// Fluid type scale
+$text-hero: clamp(3.4rem, 10vw, 11rem);
+$text-display: clamp(3rem, 7vw, 8rem);
+$text-title: clamp(2.25rem, 5vw, 5rem);
+$text-h3: clamp(1.5rem, 2.6vw, 2.5rem);
+$text-lead: clamp(1.15rem, 1.5vw, 1.5rem);
+$text-body: clamp(1rem, 1.05vw, 1.125rem);
+$text-small: 0.875rem;
+$text-meta: 0.75rem;           // mono / Latin labels
+
+// Arabic needs generous leading; display sizes can be tighter
+// but never below ~1.15 or ascenders/descenders clip.
+$leading-display: 1.18;
+$leading-heading: 1.3;
+$leading-body: 1.85;
+$tracking-meta: 0.08em;         // Latin metadata ONLY. Never on Arabic.
+
+// ---------- Spacing ----------
+$space-3xs: 0.25rem;
+$space-2xs: 0.5rem;
+$space-xs: 0.75rem;
+$space-sm: 1rem;
+$space-md: 1.5rem;
+$space-lg: 2.5rem;
+$space-xl: 4rem;
+$space-2xl: 6rem;
+$space-3xl: 9rem;
+
+$section-pad-block: clamp(4.5rem, 11vw, 11rem);
+$gutter: clamp(1rem, 3.2vw, 3rem);
+
+// ---------- Layout ----------
+$container-max: 1760px;
+$grid-columns: 12;
+$grid-columns-tablet: 6;
+$grid-columns-mobile: 4;
+$grid-gap: clamp(1rem, 2vw, 2rem);
+$nav-height: 4.5rem;
+$nav-height-mobile: 4rem;
+
+// ---------- Borders / radius / shadow ----------
+$border-thin: 1px;
+$border-default: 2px;
+$border-heavy: 3px;
+$radius-none: 0;
+$radius-sm: 4px;
+
+// Hard shadows are mirrored for RTL: they fall toward the inline-end (left).
+$shadow-offset: 6px;
+$shadow-offset-sm: 3px;
+
+// ---------- Motion ----------
+$ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+$ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+$ease-snap: cubic-bezier(0.2, 0.9, 0.1, 1);
+$transition-fast: 140ms;
+$transition-default: 260ms;
+$transition-slow: 600ms;
+$reveal-distance: 28px;
+
+// ---------- Z-index ----------
+$z-layers: (
+  base: 1,
+  raised: 10,
+  nav: 100,
+  progress: 110,
+  menu: 200,
+  cursor: 300,
+  loader: 400,
+  skip: 500,
+);
+
+// ---------- Breakpoints (mobile-first, min-width) ----------
+$breakpoints: (
+  sm: 480px,
+  md: 768px,
+  lg: 1024px,
+  xl: 1280px,
+  2xl: 1600px,
+);
+
+@function z($layer) {
+  @return map.get($z-layers, $layer);
+}

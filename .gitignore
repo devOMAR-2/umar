@@ -1,0 +1,6 @@
+node_modules/
+.playwright-mcp/
+css/*.map
+.DS_Store
+Thumbs.db
+_render/
