@@ -33,6 +33,7 @@
   <meta name="twitter:title" content="عمر الفراج | مهندس برمجيات">
   <meta name="twitter:description" content="مهندس برمجيات أبني الأنظمة والمنتجات الرقمية وتجارب الويب، من الفكرة إلى المنتج.">
   <meta name="twitter:image" content="https://devomar.me/assets/og/og-image.png">
+  <meta name="twitter:image:alt" content="شعار عمر الفراج مع عبارة مهندس برمجيات">
 
   <!-- Icons -->
   <link rel="icon" href="assets/icons/favicon.ico" sizes="any">
@@ -99,9 +100,10 @@
   <!-- 00 / Navigation -->
   <header class="site-header" data-nav data-nav-theme="light">
     <div class="site-header__inner">
-      <a class="site-header__brand" href="#top" aria-label="عمر الفراج — إلى أعلى الصفحة">
+      <a class="site-header__brand" href="#top">
         <svg class="site-header__logo" viewBox="0 0 1328 1084" aria-hidden="true"><use href="#logo-wordmark" width="1328" height="1084"/></svg>
-        <span class="site-header__version" lang="en" dir="ltr">V1.0 / 2026</span>
+        <span class="visually-hidden">عمر الفراج — إلى أعلى الصفحة</span>
+        <span class="site-header__version" lang="en" dir="ltr" aria-hidden="true">V1.0 / 2026</span>
       </a>
 
       <nav class="site-nav" aria-label="التنقل الرئيسي">
@@ -127,7 +129,7 @@
   </header>
 
   <!-- Mobile menu (full-screen panel). Closed state: inert + aria-hidden. -->
-  <div class="mobile-menu" id="mobile-menu" data-menu data-theme="dark" role="dialog" aria-modal="true" aria-label="القائمة" aria-hidden="true" inert>
+  <div class="mobile-menu" id="mobile-menu" data-menu data-theme="dark" aria-hidden="true" inert>
     <div class="mobile-menu__inner">
       <div class="mobile-menu__head">
         <p class="mobile-menu__title">القائمة</p>
@@ -236,7 +238,7 @@
       <div class="section__inner about__inner">
         <header class="section-head" data-reveal>
           <p class="section-head__label"><span class="section-head__num" lang="en">01</span><span class="section-head__slash">/</span><span>عني</span></p>
-          <p class="section-head__code" lang="en" dir="ltr">SECTION / 01 — ABOUT</p>
+          <p class="section-head__code" lang="en" dir="ltr">BASED IN RIYADH</p>
         </header>
 
         <h2 class="about__title" id="about-title" data-reveal>
@@ -259,11 +261,11 @@
           </div>
 
           <div class="about__questions" data-reveal>
-            <p class="about__questions-title">قبل أول سطر كود، أسأل:</p>
+            <p class="about__questions-title">قبل أول سطر كود:</p>
             <ol class="about__questions-list">
-              <li><span class="about__q-index" lang="en">Q1</span>ليه المنتج موجود؟</li>
-              <li><span class="about__q-index" lang="en">Q2</span>مين يستخدمه؟</li>
-              <li><span class="about__q-index" lang="en">Q3</span>كيف نبسّطه؟</li>
+              <li><span class="about__q-index" lang="en">Q1</span>وش المشكلة الحقيقية؟</li>
+              <li><span class="about__q-index" lang="en">Q2</span>وش أبسط حل يكفي؟</li>
+              <li><span class="about__q-index" lang="en">Q3</span>كيف يكبر بدون ما يتعقد؟</li>
             </ol>
           </div>
         </div>
@@ -299,7 +301,7 @@
               <p class="project__number" lang="en">01</p>
               <p class="project__eyebrow" lang="en" dir="ltr">RESUME NEEDED</p>
               <h3 class="project__title" id="project-01-title">مطلوب سيرة ذاتية</h3>
-              <p class="project__desc">منصة لإنشاء السير الذاتية وتحليلها، وقياس توافقها مع أنظمة ATS.</p>
+              <p class="project__desc">منصة لإنشاء السير الذاتية وتحليلها، وقياس توافقها مع أنظمة <span lang="en">ATS</span>.</p>
               <dl class="project__meta">
                 <div class="project__meta-row"><dt>النوع</dt><dd><span lang="en">SaaS</span> / منصة ويب</dd></div>
                 <div class="project__meta-row"><dt>الدور</dt><dd>المنتج والهندسة</dd></div>
@@ -349,7 +351,7 @@
               <h3 class="project__title" id="project-02-title">هامش</h3>
               <p class="project__desc">منصة ويب واحدة تخدم أكثر من نطاق.</p>
               <dl class="project__meta">
-                <div class="project__meta-row"><dt>النوع</dt><dd>منصة ويب متعددة النطاقات</dd></div>
+                <div class="project__meta-row"><dt>النوع</dt><dd>منصة ويب</dd></div>
               </dl>
               <a class="link-arrow project__cta" href="#contact">
                 <span>اسألني عن المشروع</span>
@@ -362,11 +364,11 @@
           <article class="project project--split-end" aria-labelledby="project-03-title" data-project>
             <div class="project__info" data-reveal>
               <p class="project__number" lang="en">03</p>
-              <p class="project__eyebrow">لعبة جماعية</p>
+              <p class="project__eyebrow">ألعاب جماعية</p>
               <h3 class="project__title" id="project-03-title" lang="en" dir="ltr">Teamstein</h3>
-              <p class="project__desc">منصة ألعاب اجتماعية تُلعب مع الفريق.</p>
+              <p class="project__desc">ألعاب اجتماعية يلعبها الفريق مع بعض.</p>
               <dl class="project__meta">
-                <div class="project__meta-row"><dt>النوع</dt><dd>منصة ألعاب اجتماعية</dd></div>
+                <div class="project__meta-row"><dt>النوع</dt><dd>منصة ألعاب</dd></div>
               </dl>
               <a class="link-arrow project__cta" href="#contact">
                 <span>اسألني عن المشروع</span>
@@ -390,7 +392,7 @@
         </div>
 
         <p class="work__note" data-reveal>
-          الأنظمة المؤسسية والداخلية ما تنعرض للعامة — أحكي لك عنها بالتفصيل في مكالمة.
+          الأنظمة المؤسسية والداخلية ما أقدر أعرضها هنا — أشرحها لك بالتفصيل في مكالمة.
           <a class="link-arrow" href="#contact"><span>خلنا نتكلم</span><svg class="icon" aria-hidden="true"><use href="#icon-arrow-out"/></svg></a>
         </p>
       </div>
@@ -401,7 +403,7 @@
       <div class="section__inner">
         <header class="section-head" data-reveal>
           <p class="section-head__label"><span class="section-head__num" lang="en">03</span><span class="section-head__slash">/</span><span>الخبرة</span></p>
-          <p class="section-head__code" lang="en" dir="ltr">SECTION / 03 — EXPERIENCE</p>
+          <p class="section-head__code" lang="en" dir="ltr">6 AREAS / ~8 YRS</p>
         </header>
 
         <div class="experience__head">
@@ -409,7 +411,7 @@
             <span class="experience__title-line">8 سنوات</span>
             <span class="experience__title-line">من البناء.</span>
           </h2>
-          <p class="experience__intro" data-reveal>بدل سيرة ذاتية طويلة، هذي المساحات اللي اشتغلت فيها طوال السنوات الماضية.</p>
+          <p class="experience__intro" data-reveal>بدل سيرة ذاتية طويلة، هذي المجالات اللي اشتغلت فيها خلال السنين الماضية.</p>
         </div>
 
         <div class="ruler" aria-hidden="true" data-reveal>
@@ -440,7 +442,7 @@
           <li class="experience__item" data-reveal>
             <span class="experience__index" lang="en">04</span>
             <h3 class="experience__name">تطوير المنتجات</h3>
-            <p class="experience__desc">منتجات <span lang="en">SaaS</span> من الفكرة للإطلاق.</p>
+            <p class="experience__desc">منتجات <span lang="en">SaaS</span> تبدأ صغيرة وتكبر مع مستخدميها.</p>
           </li>
           <li class="experience__item" data-reveal>
             <span class="experience__index" lang="en">05</span>
@@ -461,7 +463,7 @@
       <div class="section__inner">
         <header class="section-head" data-reveal>
           <p class="section-head__label"><span class="section-head__num" lang="en">04</span><span class="section-head__slash">/</span><span>وش أسوي؟</span></p>
-          <p class="section-head__code" lang="en" dir="ltr">SECTION / 04 — CAPABILITIES</p>
+          <p class="section-head__code" lang="en" dir="ltr">5 CAPABILITIES</p>
         </header>
 
         <h2 class="capabilities__title" id="capabilities-title" data-reveal>
@@ -479,7 +481,7 @@
           <li class="capability" data-reveal>
             <span class="capability__index" lang="en">02</span>
             <h3 class="capability__title">تطوير الأنظمة</h3>
-            <p class="capability__desc">خلفيات متينة، واجهات برمجية مرتبة، وبيانات في مكانها الصح.</p>
+            <p class="capability__desc">أنظمة خلفية متينة، واجهات برمجية مرتبة، وبيانات في مكانها الصح.</p>
             <p class="capability__tags" lang="en" dir="ltr">Laravel / PHP / REST APIs / SQL / Redis</p>
           </li>
           <li class="capability" data-reveal>
@@ -492,7 +494,7 @@
             <span class="capability__index" lang="en">04</span>
             <h3 class="capability__title">هندسة المنتجات</h3>
             <p class="capability__desc">أفكّر في المنتج كامل: مين يستخدمه، وش يحتاج، وكيف يكبر.</p>
-            <p class="capability__tags">المعمارية / تجربة المستخدم / تطوير المنتج</p>
+            <p class="capability__tags">معمارية الأنظمة / تجربة المستخدم / تطوير المنتج</p>
           </li>
           <li class="capability" data-reveal>
             <span class="capability__index" lang="en">05</span>
@@ -540,7 +542,7 @@
       <div class="section__inner">
         <header class="section-head" data-reveal>
           <p class="section-head__label"><span class="section-head__num" lang="en">06</span><span class="section-head__slash">/</span><span>طريقتي</span></p>
-          <p class="section-head__code" lang="en" dir="ltr">SECTION / 06 — APPROACH</p>
+          <p class="section-head__code" lang="en" dir="ltr">4 PRINCIPLES</p>
         </header>
 
         <h2 class="philosophy__title" id="philosophy-title" data-reveal>
@@ -567,7 +569,7 @@
     <!-- 09 / Contact
          CONTACT CONFIG — see README "Contact & social links".
          1. Replace every __EMAIL__ / __GITHUB__ / __LINKEDIN__ placeholder.
-         2. Remove the `hidden` attribute from each channel you publish.
+         2. Remove the `hidden` attribute from the <ul> and from each channel you publish.
          Links that still contain "__" are treated as unconfigured by main.js
          (aria-disabled, click does nothing) so a placeholder never ships live. -->
     <section class="section contact" id="contact" data-theme="dark" aria-labelledby="contact-title">
@@ -585,7 +587,7 @@
         </h2>
 
         <div class="contact__body">
-          <p class="contact__text" data-reveal>مشروع جديد، نظام يحتاج ترتيب، أو فكرة لسا على الورق — احكِ لي عنها.</p>
+          <p class="contact__text" data-reveal>مشروع جديد، نظام يحتاج ترتيب، أو فكرة للحين على الورق — كلّمني عنها.</p>
 
           <a class="button button--giant contact__cta" href="mailto:__EMAIL__" data-contact-link data-reveal>
             <span>تواصل معي</span>
@@ -593,7 +595,7 @@
           </a>
         </div>
 
-        <ul class="contact__channels" aria-label="قنوات التواصل">
+        <ul class="contact__channels" aria-label="قنوات التواصل" hidden>
           <li class="contact__channel" hidden>
             <a class="contact__channel-link" href="mailto:__EMAIL__" data-contact-link>
               <span class="contact__channel-label" lang="en">EMAIL</span>

@@ -96,7 +96,7 @@ Everything respects `prefers-reduced-motion`; the loader and hero entrance are p
 Search `index.html` for `CONTACT CONFIG`.
 
 1. Replace every `__EMAIL__`, `__GITHUB__` and `__LINKEDIN__` placeholder (the big CTA uses `mailto:__EMAIL__`).
-2. Remove the `hidden` attribute from each `<li class="contact__channel">` you want to show.
+2. Remove the `hidden` attribute from `<ul class="contact__channels">` and from each `<li class="contact__channel">` you want to show.
 3. Until a link is configured, `main.js` marks it `aria-disabled` and makes it inert, so a placeholder can never ship as a live link.
 
 To add another channel (e.g. X), copy one `<li class="contact__channel">`. If you add public profiles, also add them to the
