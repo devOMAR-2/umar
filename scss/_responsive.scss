@@ -37,6 +37,27 @@
   .cursor {
     display: none;
   }
+
+  // Indicators drawn only with background-color would be flattened to
+  // Canvas and disappear — opt them out and paint with system colors.
+  .site-nav__link::after,
+  .scroll-progress__bar,
+  .loader__line {
+    forced-color-adjust: none;
+    background-color: Highlight;
+  }
+
+  .menu-toggle__icon > span,
+  .marquee__item::after {
+    forced-color-adjust: none;
+    background-color: CanvasText;
+  }
+
+  // Current section: also underline the text, not just the bar.
+  .site-nav__link.is-active {
+    text-decoration: underline;
+    text-underline-offset: 0.35em;
+  }
 }
 
 // ---------- Print ----------

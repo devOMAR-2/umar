@@ -96,9 +96,13 @@ $reveal-step: 70ms;
   }
 
   // Safety net for decorative motion anywhere on the page. `:is(#…, html)`
-  // takes the id's specificity (the id never exists), so this outranks
-  // component rules without resorting to !important. Longhands only:
-  // components that opt out entirely still use `animation: none`.
+  // takes the id's specificity (1,0,1 — the id never exists, `html` always
+  // matches), so this outranks component rules without !important.
+  // Longhands only: components that opt out entirely still use
+  // `animation: none`. Timings collapse to ~1ms but end states still
+  // apply: the mobile menu opens/closes instantly (clip-path + visibility
+  // just skip their delay), `forwards` animations land on their final
+  // frame, and `display` (e.g. loader `display: none`) is untouched.
   :is(#reduced-motion, html) *,
   :is(#reduced-motion, html) *::before,
   :is(#reduced-motion, html) *::after {

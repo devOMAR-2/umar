@@ -7,7 +7,8 @@
 @use 'variables' as *;
 @use 'mixins' as *;
 
-$icon-nudge: 3px;
+$icon-nudge: $shadow-offset-sm;
+$tap-target: 2.75rem; // 44px — WCAG 2.5.5 comfortable touch target
 $spark-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0c.6 6.6 5.4 11.4 12 12-6.6.6-11.4 5.4-12 12-.6-6.6-5.4-11.4-12-12C6.6 11.4 11.4 6.6 12 0Z'/%3E%3C/svg%3E");
 $menu-duration: 450ms;
 
@@ -123,7 +124,7 @@ $menu-duration: 450ms;
 
 // The contact CTA: a physical block you want to press.
 .button--giant {
-  --btn-offset: 10px;
+  --btn-offset: #{$shadow-offset + $shadow-offset-sm};
   --btn-shadow: var(--line);
   // Icon grows as it travels; settles back when pressed.
   --nudge: 0.1em;
@@ -156,6 +157,7 @@ $menu-duration: 450ms;
 .link-arrow {
   @include icon-nudge;
 
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 0.5em;
@@ -181,6 +183,21 @@ $menu-duration: 450ms;
     background-size: 100% 100%;
     color: $color-white;
   }
+
+  // Touch: grow the HIT AREA to 44px tall with an invisible layer instead
+  // of padding the box, so the 2px bar stays hugging the text (and inline
+  // links inside paragraphs don't push the line apart).
+  @media (pointer: coarse) {
+    &::before {
+      content: '';
+      position: absolute;
+      inset-inline: 0;
+      inset-block: 50% auto;
+      min-block-size: $tap-target;
+      block-size: 100%;
+      translate: 0 -50%;
+    }
+  }
 }
 
 // ============================================================
@@ -204,12 +221,20 @@ $menu-duration: 450ms;
     height: $nav-height;
   }
 
+  &[data-nav-theme='light'] {
+    --focus: #{$color-blue};
+  }
+
   &[data-nav-theme='dark'] {
     @include theme(dark);
+
+    --focus: #{$color-off-white};
   }
 
   &[data-nav-theme='blue'] {
     @include theme(blue);
+
+    --focus: #{$color-white};
   }
 
   html.is-menu-open & {
@@ -226,6 +251,9 @@ $menu-duration: 450ms;
 }
 
 .site-header__brand {
+  // Positioned so the .visually-hidden label (absolute) is contained
+  // here and never joins the flex flow or the gap.
+  position: relative;
   display: flex;
   align-items: center;
   gap: $space-sm;
@@ -257,9 +285,11 @@ $menu-duration: 450ms;
 
   display: none;
   padding-inline-start: $space-sm;
-  border-inline-start: $border-default solid var(--line-soft);
+  // --muted, not --line-soft: the soft hairline vanishes on the dark nav.
+  border-inline-start: $border-default solid var(--muted);
   color: var(--muted);
   line-height: 1.2;
+  transition: border-color $transition-default linear;
 
   @include up(xl) {
     display: block;
@@ -308,7 +338,7 @@ $menu-duration: 450ms;
     position: absolute;
     inset-inline: 0;
     inset-block-end: -$border-default;
-    height: 4px;
+    height: $space-3xs;
     background-color: var(--accent);
     transform: scaleX(0);
     transform-origin: right;
@@ -329,6 +359,34 @@ $menu-duration: 450ms;
   }
 }
 
+// ---------- No-JS fallback (below lg) ----------
+// The menu toggle needs JS, so without it the toggle is hidden and the
+// primary nav shows as a compact row that scrolls sideways if it must.
+// `scripting: none` (not `html:not(.js)`) so JS users never see a flash of
+// this row before the deferred main.js runs.
+@media (scripting: none) {
+  .site-header .menu-toggle {
+    display: none;
+  }
+
+  @include down(lg) {
+    .site-nav {
+      display: flex;
+      flex: 1;
+      min-width: 0;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scrollbar-width: none;
+    }
+
+    .site-nav__link {
+      padding-inline: 0.85em;
+      font-size: 0.9rem;
+      white-space: nowrap;
+    }
+  }
+}
+
 .site-header__cta {
   display: none;
 
@@ -345,8 +403,9 @@ $menu-duration: 450ms;
   align-items: center;
   align-self: center;
   gap: 0.7em;
+  min-block-size: $tap-target;
   margin-inline-start: auto;
-  padding: 0.5em 0.85em;
+  padding: 0.35em 0.85em;
   border: $border-default solid var(--line);
   background-color: var(--bg);
   color: var(--fg);
@@ -395,16 +454,17 @@ $menu-duration: 450ms;
       transform $transition-default $ease-out;
   }
 
+  // Two bars, centred ±$space-3xs around the middle; they meet on open.
   > span:first-child {
-    inset-block-start: calc(50% - 5px);
+    inset-block-start: calc(50% - #{$border-default * 0.5} - #{$space-3xs});
   }
 
   > span:last-child {
-    inset-block-start: calc(50% + 3px);
+    inset-block-start: calc(50% - #{$border-default * 0.5} + #{$space-3xs});
   }
 
   [aria-expanded='true'] > & > span {
-    inset-block-start: calc(50% - 1px);
+    inset-block-start: calc(50% - #{$border-default * 0.5});
   }
 
   [aria-expanded='true'] > & > span:first-child {
@@ -481,7 +541,7 @@ $menu-duration: 450ms;
   > li {
     border-block-end: $border-default solid var(--line-soft);
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY($reveal-distance);
     transition:
       opacity 360ms $ease-out,
       transform $menu-duration $ease-out;
@@ -695,7 +755,7 @@ $menu-duration: 450ms;
     height: 10px;
     background-color: $color-blue;
     // Thin off-white edge keeps the square visible on blue sections.
-    outline: 1px solid rgba($color-off-white, 0.85);
+    outline: $border-thin solid rgba($color-off-white, 0.85);
     translate: -50% -50%;
     transition:
       width 200ms $ease-out,
@@ -792,13 +852,10 @@ $marquee-gap: clamp(1.25rem, 3vw, 3rem);
   // Same space after the last spark as between items → seamless seam.
   padding-inline-end: $marquee-gap;
 
+  // Reduced motion: one static row, starting at the RTL start (right)
+  // on the page gutter and simply clipped by .marquee at the far edge.
   @include reduced-motion {
-    flex-wrap: wrap;
-    flex-shrink: 1;
-    justify-content: center;
-    row-gap: $space-2xs;
-    width: 100%;
-    padding-inline: $gutter;
+    padding-inline-start: $gutter;
 
     &[aria-hidden='true'] {
       display: none;

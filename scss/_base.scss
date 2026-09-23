@@ -8,6 +8,8 @@ html {
   // Default palette so un-themed elements (loader, cursor, menus) resolve vars.
   @include theme(light);
 
+  --focus: #{$color-blue};
+
   scroll-padding-top: $nav-height-mobile;
   color-scheme: light;
 
@@ -31,16 +33,25 @@ body {
 }
 
 // ---------- Themes ----------
+// --focus: the keyboard ring color per theme. The accent alone is only
+// ~3:1 on dark (blue on black) and blue (black on blue), so those themes
+// ring in their foreground instead — high contrast, still a hard 3px line.
 [data-theme='light'] {
   @include theme(light);
+
+  --focus: #{$color-blue};
 }
 
 [data-theme='dark'] {
   @include theme(dark);
+
+  --focus: #{$color-off-white};
 }
 
 [data-theme='blue'] {
   @include theme(blue);
+
+  --focus: #{$color-white};
 }
 
 // ---------- Focus ----------
@@ -49,7 +60,7 @@ body {
 }
 
 :focus-visible {
-  @include focus-ring(var(--accent), 3px);
+  @include focus-ring(var(--focus, var(--accent)), $border-heavy);
 }
 
 // ---------- Icons & sprite ----------
@@ -73,8 +84,11 @@ body {
 }
 
 // ---------- Accessibility ----------
+// Absolute, so inside flex/grid parents it takes no slot and no gap.
 .visually-hidden {
   @include visually-hidden;
+
+  clip-path: inset(50%);
 }
 
 .skip-link {

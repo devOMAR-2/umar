@@ -26,8 +26,9 @@ body {
 }
 
 // Lists only lose their semantics-free styling when they are designed.
-ul[class],
-ol[class] {
+// Zero specificity: a component's own padding (e.g. the marquee seam)
+// must win over this reset.
+:where(ul[class], ol[class]) {
   list-style: none;
   padding: 0;
 }
