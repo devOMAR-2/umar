@@ -29,6 +29,28 @@
   }
 }
 
+// Exposed column structure (for a ::before on a container-padded box):
+// one hairline on the right edge, then one on every column's inline-end
+// (left) edge — so dividers placed on column edges land on a hairline.
+@mixin column-hairlines {
+  content: '';
+  position: absolute;
+  inset-inline: $gutter;
+  z-index: -1;
+  border-inline-start: $border-thin solid var(--line-soft);
+  background-image: linear-gradient(to right, var(--line-soft) $border-thin, transparent $border-thin);
+  background-size: calc((100% + #{$grid-gap}) / #{$grid-columns-mobile}) 100%;
+  pointer-events: none;
+
+  @include up(md) {
+    background-size: calc((100% + #{$grid-gap}) / #{$grid-columns-tablet}) 100%;
+  }
+
+  @include up(lg) {
+    background-size: calc((100% + #{$grid-gap}) / #{$grid-columns}) 100%;
+  }
+}
+
 // Stacked display lines ("line / line / accent line").
 @mixin stacked-lines {
   display: block;
@@ -54,9 +76,25 @@
   }
 }
 
+// Project frame: bordered 16:11 box with a blue hard shadow.
+@mixin project-frame {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 11;
+  border: $border-default solid var(--line);
+  object-fit: cover;
+  transition:
+    transform $transition-default $ease-snap,
+    box-shadow $transition-default $ease-snap;
+
+  @include hard-shadow($project-shadow, $color-blue);
+}
+
 $hero-start: 1s;           // loader lifts
-$project-shadow: 8px;
+$project-shadow: $space-2xs;
 $mark-ratio: calc(552 / 1631);
+$tap-min: 2.75rem;         // 44px touch target
+$short-desktop: '(min-width: #{map.get($breakpoints, lg)}) and (max-height: 820px)';
 
 // ============================================================
 // 01 / HERO
@@ -92,25 +130,10 @@ $mark-ratio: calc(552 / 1631);
     grid-template-columns: repeat($grid-columns, minmax(0, 1fr));
   }
 
-  // Exposed column structure: one hairline at the edge of each column.
   &::before {
-    content: '';
-    position: absolute;
+    @include column-hairlines;
+
     inset-block: 0;
-    inset-inline: $gutter;
-    z-index: -1;
-    border-inline-start: $border-thin solid var(--line-soft);
-    background-image: linear-gradient(to right, var(--line-soft) $border-thin, transparent $border-thin);
-    background-size: calc((100% + #{$grid-gap}) / #{$grid-columns-mobile}) 100%;
-    pointer-events: none;
-
-    @include up(md) {
-      background-size: calc((100% + #{$grid-gap}) / #{$grid-columns-tablet}) 100%;
-    }
-
-    @include up(lg) {
-      background-size: calc((100% + #{$grid-gap}) / #{$grid-columns}) 100%;
-    }
   }
 }
 
@@ -121,52 +144,69 @@ $mark-ratio: calc(552 / 1631);
 }
 
 // ---------- Meta strip ----------
+// Same columns + gaps as the page grid, so every divider sits on a
+// column's inline-end edge — exactly where a hero hairline runs.
+// 2 × 2 (2 / 3 page cols each) until desktop, then one row (2 cols each).
 .hero__meta {
   grid-column: 1 / -1;
   grid-row: 1;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: $grid-gap;
   border-block-end: $border-default solid var(--line);
-
-  @include up(md) {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
 
   @include up(lg) {
     grid-column: 1 / 9;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
 .hero__meta-item {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: $space-3xs;
   min-width: 0;
-  padding: $space-sm $space-sm $space-sm 0;
+  padding-block: $space-sm;
+  padding-inline: 0 $space-sm;
   font-size: $text-small;
   font-weight: $weight-semibold;
   line-height: 1.45;
 
-  &:nth-child(even) {
-    padding-inline-start: $space-sm;
-    border-inline-start: $border-default solid var(--line);
+  &:nth-child(odd) {
+    border-inline-end: $border-default solid var(--line);
   }
 
   &:nth-child(n + 3) {
     border-block-start: $border-default solid var(--line);
   }
 
-  @include up(md) {
+  // Carry the row rule across the column gap.
+  &:nth-child(3)::after {
+    content: '';
+    position: absolute;
+    inset-block-start: calc(#{$border-default} * -1);
+    inset-inline-start: 100%;
+    width: calc(#{$grid-gap} + #{$border-default});
+    height: $border-default;
+    background-color: var(--line);
+  }
+
+  @include up(lg) {
     padding-block: $space-md $space-sm;
 
-    &:nth-child(n + 2) {
-      padding-inline-start: $space-sm;
-      border-inline-start: $border-default solid var(--line);
+    &:nth-child(n) {
+      border-block-start: 0;
+      border-inline-end: $border-default solid var(--line);
     }
 
-    &:nth-child(n + 3) {
-      border-block-start: 0;
+    &:last-child {
+      border-inline-end: 0;
+    }
+
+    &:nth-child(3)::after {
+      content: none;
     }
   }
 }
@@ -193,7 +233,6 @@ $mark-ratio: calc(552 / 1631);
 
   @include up(lg) {
     grid-column: 1 / 9;
-    margin-block: $space-lg $space-md;
     font-size: max(4.5rem, min(#{$text-hero}, (100svh - 24rem) / 3.45));
   }
 }
@@ -229,7 +268,6 @@ $mark-ratio: calc(552 / 1631);
 
   @include up(lg) {
     grid-column: 1 / 9;
-    padding-block-end: $space-lg;
   }
 }
 
@@ -244,6 +282,23 @@ $mark-ratio: calc(552 / 1631);
   display: flex;
   flex-wrap: wrap;
   gap: $space-sm;
+}
+
+// Short desktop screens (1024×768 laptops…): tighten the vertical rhythm
+// so the whole hero — buttons and pillar labels included — fits one screen.
+@media #{$short-desktop} {
+  .hero__meta-item {
+    padding-block: $space-xs;
+  }
+
+  .hero__title {
+    margin-block: $space-md $space-sm;
+    font-size: max(3.75rem, min(#{$text-hero}, (100svh - 25rem) / 3.45));
+  }
+
+  .hero__footer {
+    padding-block: $space-sm $space-md;
+  }
 }
 
 // ---------- The pillar ----------
@@ -318,13 +373,15 @@ $mark-ratio: calc(552 / 1631);
   color: $color-off-white;
 }
 
+// Coordinates only where the pillar is wide enough to hold them beside
+// the index without crowding.
 .hero__coords {
   display: none;
   top: $space-md;
   right: $space-md;
   text-align: right;
 
-  @include up(md) {
+  @include up(lg) {
     display: block;
   }
 }
@@ -372,6 +429,7 @@ $mark-ratio: calc(552 / 1631);
     align-items: center;
     gap: $space-2xs;
     width: $gutter;
+    min-height: $tap-min;
     padding-block: $space-2xs;
     color: var(--muted);
     font-family: $font-mono;
@@ -381,6 +439,16 @@ $mark-ratio: calc(552 / 1631);
     line-height: 1;
     text-decoration: none;
     transition: color $transition-fast linear;
+
+    // Hit area ≥ 44px wide even when the gutter is narrower (tablets):
+    // it grows toward the content, never off-screen.
+    &::before {
+      content: '';
+      position: absolute;
+      inset-block: 0;
+      inset-inline-start: 0;
+      inset-inline-end: min(0px, calc(#{$gutter} - #{$tap-min}));
+    }
   }
 
   > [lang] {
@@ -605,6 +673,18 @@ $mark-ratio: calc(552 / 1631);
 // ============================================================
 // 04 / WORK
 // ============================================================
+.work {
+  isolation: isolate;
+}
+
+// The hero's exposed column grid, echoed once — barely there.
+.work > .section__inner::before {
+  @include column-hairlines;
+
+  inset-block: calc(#{$section-pad-block} * -1);
+  opacity: 0.55;
+}
+
 .work__title {
   @include display($text-display);
 
@@ -637,6 +717,40 @@ $mark-ratio: calc(552 / 1631);
   row-gap: $space-lg;
   padding-block-start: $space-lg;
   border-block-start: $border-default solid var(--line);
+
+  // Hover (desktop, motion allowed): the frame steps into its shadow and
+  // the art gets a small nudge. No pointer parallax.
+  @include motion-ok {
+    @include hover {
+      .project-art,
+      .project__image {
+        transform: translate(calc(#{$project-shadow} * -0.4), calc(#{$project-shadow} * 0.4));
+
+        @include hard-shadow(calc(#{$project-shadow} * 0.6), $color-blue);
+      }
+
+      .project-art__word {
+        transform: translateX(calc(#{$project-shadow} * -0.75));
+      }
+
+      .project-art__scan {
+        animation: resume-scan 1.8s $ease-in-out infinite alternate;
+      }
+
+      .project-art__board > :nth-child(1) {
+        background-color: transparent;
+      }
+
+      .project-art__board > :nth-child(2),
+      .project-art__board > :nth-child(11) {
+        background-color: $color-blue;
+      }
+
+      .project-art__board > :nth-child(12) {
+        background-color: $color-off-white;
+      }
+    }
+  }
 }
 
 // Small screens: visual first, text after.
@@ -699,6 +813,19 @@ $mark-ratio: calc(552 / 1631);
 }
 
 .project--wide {
+  .project-art,
+  .project__image {
+    aspect-ratio: 4 / 3;
+
+    @include up(md) {
+      aspect-ratio: 16 / 9;
+    }
+
+    @include up(lg) {
+      aspect-ratio: 21 / 9;
+    }
+  }
+
   @include up(lg) {
     .project__info {
       grid-template-columns: repeat($grid-columns, minmax(0, 1fr));
@@ -780,7 +907,10 @@ $mark-ratio: calc(552 / 1631);
   font-weight: $weight-bold;
   line-height: $leading-heading;
 
+  // dir="ltr" (Teamstein): shrink-wrap and sit on the RTL start edge
+  // like the Arabic titles, instead of stretching and aligning left.
   &[lang='en'] {
+    justify-self: start;
     line-height: 1.1;
   }
 }
@@ -825,45 +955,8 @@ $mark-ratio: calc(552 / 1631);
 }
 
 // ---------- Project frame ----------
-.project-art,
 .project__image {
-  display: block;
-  width: 100%;
-  aspect-ratio: 16 / 11;
-  border: $border-default solid var(--line);
-  object-fit: cover;
-  transition:
-    transform $transition-default $ease-snap,
-    box-shadow $transition-default $ease-snap;
-
-  @include hard-shadow($project-shadow, $color-blue);
-}
-
-.project--wide {
-  .project-art,
-  .project__image {
-    aspect-ratio: 4 / 3;
-
-    @include up(md) {
-      aspect-ratio: 16 / 9;
-    }
-
-    @include up(lg) {
-      aspect-ratio: 21 / 9;
-    }
-  }
-}
-
-.project {
-  @include motion-ok {
-    @include hover {
-      .project-art,
-      .project__image {
-        transform: translate(-3px, 3px);
-        box-shadow: calc(#{$project-shadow} * -0.6) calc(#{$project-shadow} * 0.6) 0 0 $color-blue;
-      }
-    }
-  }
+  @include project-frame;
 }
 
 .project__caption {
@@ -876,14 +969,12 @@ $mark-ratio: calc(552 / 1631);
 
 // ---------- Project art (typographic placeholders) ----------
 .project-art {
+  @include project-frame;
+
   position: relative;
   overflow: hidden;
   isolation: isolate;
   container-type: inline-size;
-
-  // Shared: pointer parallax (JS sets --px / --py on the figure).
-  --shift-x: calc(var(--px, 0) * 6px);
-  --shift-y: calc(var(--py, 0) * 6px);
 }
 
 .project-art__word {
@@ -892,10 +983,7 @@ $mark-ratio: calc(552 / 1631);
   letter-spacing: 0;
   white-space: nowrap;
   pointer-events: none;
-  translate: var(--shift-x) var(--shift-y);
-  transition:
-    translate 300ms $ease-out,
-    transform $transition-default $ease-out;
+  transition: transform $transition-default $ease-out;
 }
 
 .project-art__tag {
@@ -928,9 +1016,8 @@ $mark-ratio: calc(552 / 1631);
     overflow: hidden;
     background-color: $color-white;
     border: $border-default solid $color-black;
-    box-shadow: -6px 6px 0 0 $color-black;
-    translate: calc(var(--shift-x) * -0.6) calc(var(--shift-y) * -0.6);
-    transition: translate 300ms $ease-out;
+
+    @include hard-shadow($shadow-offset, $color-black);
   }
 
   .project-art__doc-head {
@@ -981,6 +1068,17 @@ $mark-ratio: calc(552 / 1631);
   }
 }
 
+// Doc height ≈ 53.3cqw (40% wide, 3:4); 42% → 88% of it ≈ 24.5cqw of travel.
+@keyframes resume-scan {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(24.5cqw);
+  }
+}
+
 // 02 — Hamesh (هامش = margin): a notebook margin on brand blue.
 .project-art--hamesh {
   background-color: $color-blue;
@@ -996,10 +1094,11 @@ $mark-ratio: calc(552 / 1631);
     border-inline: $border-heavy solid $color-black;
   }
 
+  // Scales with the frame at every size and bleeds hard off the bottom.
   .project-art__word {
-    inset-block-end: -0.14em;
+    inset-block-end: -0.3em;
     inset-inline-start: 27%;
-    font-size: clamp(4rem, 25cqw, 20rem);
+    font-size: 30cqw;
     line-height: 1;
   }
 
@@ -1010,9 +1109,7 @@ $mark-ratio: calc(552 / 1631);
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 6px;
-    translate: calc(var(--shift-x) * -0.5) calc(var(--shift-y) * -0.5);
-    transition: translate 300ms $ease-out;
+    gap: $space-2xs;
 
     > span {
       @include mono-meta;
@@ -1037,8 +1134,6 @@ $mark-ratio: calc(552 / 1631);
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 1.6cqw;
     width: 44%;
-    translate: calc(var(--shift-x) * -0.6) calc(var(--shift-y) * -0.6);
-    transition: translate 300ms $ease-out;
 
     > span {
       display: block;
@@ -1047,15 +1142,13 @@ $mark-ratio: calc(552 / 1631);
       transition: background-color $transition-default $ease-snap;
     }
 
-    > :nth-child(1),
-    > :nth-child(6),
-    > :nth-child(7),
-    > :nth-child(12) {
+    // :where() keeps these at low specificity so the .project hover
+    // states above can reshuffle the tokens.
+    > :where(:nth-child(1), :nth-child(6), :nth-child(7), :nth-child(12)) {
       background-color: $color-blue;
     }
 
-    > :nth-child(3),
-    > :nth-child(9) {
+    > :where(:nth-child(3), :nth-child(9)) {
       background-color: $color-off-white;
     }
   }
@@ -1073,53 +1166,18 @@ $mark-ratio: calc(552 / 1631);
   }
 }
 
-// Art micro-motion on hover (desktop, motion allowed).
-.project {
-  @include motion-ok {
-    @include hover {
-      .project-art__word {
-        transform: translate(-6px, 0);
-      }
-
-      .project-art__scan {
-        animation: resume-scan 1.8s $ease-in-out infinite alternate;
-      }
-
-      .project-art__board > :nth-child(1) {
-        background-color: transparent;
-      }
-
-      .project-art__board > :nth-child(2),
-      .project-art__board > :nth-child(11) {
-        background-color: $color-blue;
-      }
-
-      .project-art__board > :nth-child(12) {
-        background-color: $color-off-white;
-      }
-    }
-  }
-}
-
-@keyframes resume-scan {
-  from {
-    inset-block-start: 42%;
-  }
-
-  to {
-    inset-block-start: 88%;
-  }
-}
-
 .work__note {
   max-width: 60ch;
   margin-block-start: $space-2xl;
   padding-block-start: $space-md;
   border-block-start: $border-thin solid var(--line-soft);
   color: var(--muted);
+  text-wrap: balance;
 
   .link-arrow {
-    margin-inline-start: $space-2xs;
+    display: flex;
+    width: fit-content;
+    margin-block-start: $space-xs;
   }
 }
 
@@ -1152,7 +1210,7 @@ $mark-ratio: calc(552 / 1631);
   line-height: 1.7;
 
   @include up(md) {
-    grid-column: 2 / -1;
+    grid-column: 1 / 6;
   }
 
   @include up(lg) {
@@ -1223,15 +1281,19 @@ $mark-ratio: calc(552 / 1631);
   }
 }
 
-// Table of shared 2px rules — no gaps, no cards.
+// Open editorial columns hanging from the ruler — no boxes, just a 2px
+// rule over each item. Columns snap to the page grid (12 → 3 × 4 cols,
+// 6 → 2 × 3 cols); subgrid rows keep index / name / description aligned
+// across a row whatever the copy length.
 .experience__list {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  border-block-start: $border-default solid var(--line);
+  column-gap: $grid-gap;
+  margin-block-start: calc(#{$space-md} - #{$space-lg});
 
   @include up(md) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    border-inline-start: $border-default solid var(--line);
+    margin-block-start: calc(#{$space-lg} - #{$space-xl});
   }
 
   @include up(lg) {
@@ -1240,40 +1302,43 @@ $mark-ratio: calc(552 / 1631);
 }
 
 .experience__item {
-  display: flex;
-  flex-direction: column;
-  gap: $space-xs;
-  padding: $space-md 0;
-  border-block-end: $border-default solid var(--line);
-  transition: background-color $transition-default linear;
+  display: grid;
+  grid-row: span 3;
+  grid-template-rows: subgrid;
+  row-gap: 0;
+  align-content: start;
+  padding-block: $space-sm $space-lg;
+  border-block-start: $border-default solid var(--line);
+  transition: border-color $transition-fast linear;
 
   @include up(md) {
-    min-height: 15rem;
-    padding: $space-lg;
-    border-inline-end: $border-default solid var(--line);
+    padding-block-end: $space-xl;
+    padding-inline-end: $space-md;
   }
 
   @include hover {
-    background-color: var(--surface);
+    border-block-start-color: var(--accent);
+  }
+
+  @include motion-ok {
+    @include hover {
+      .experience__index {
+        transform: translateX(calc(#{$space-2xs} * -1));
+      }
+    }
   }
 }
 
 .experience__index {
   @include mono-meta;
 
-  margin-block-end: auto;
-  padding-block-end: $space-md;
+  padding-block-end: $space-lg;
   color: var(--accent);
   transition: transform $transition-default $ease-out;
-
-  .experience__item:hover & {
-    @include motion-ok {
-      transform: translateX(-8px);
-    }
-  }
 }
 
 .experience__name {
+  margin-block-end: $space-xs;
   font-size: $text-h3;
   font-weight: $weight-bold;
   line-height: $leading-heading;
@@ -1293,9 +1358,7 @@ $mark-ratio: calc(552 / 1631);
 }
 
 .capabilities__title {
-  font-size: $text-title;
-  font-weight: $weight-bold;
-  line-height: $leading-display;
+  @include display($text-display);
 
   @include up(lg) {
     grid-column: 1 / 9;
@@ -1334,8 +1397,18 @@ $mark-ratio: calc(552 / 1631);
       transform: scaleX(1);
     }
   }
+
+  @include motion-ok {
+    @include hover {
+      .capability__title {
+        transform: translateX(calc(#{$space-xs} * -1));
+      }
+    }
+  }
 }
 
+// Index | title | description with the tag line tucked under it, so the
+// Latin tags get enough measure to stay on one line (no line opening "/").
 .capability__index {
   @include mono-meta;
 
@@ -1346,12 +1419,16 @@ $mark-ratio: calc(552 / 1631);
 
   @include up(md) {
     grid-column: 1 / 2;
+    grid-row: 1 / span 3;
+  }
+
+  @include up(lg) {
     grid-row: 1 / span 2;
   }
 }
 
 .capability__title {
-  font-size: clamp(1.75rem, 4vw, 3.75rem);
+  font-size: clamp(1.5rem, 2.8vw, 2.75rem);
   font-weight: $weight-bold;
   line-height: $leading-heading;
   transition: transform 380ms $ease-out;
@@ -1362,12 +1439,7 @@ $mark-ratio: calc(552 / 1631);
 
   @include up(lg) {
     grid-column: 2 / 7;
-  }
-
-  .capability:hover & {
-    @include motion-ok {
-      transform: translateX(-10px);
-    }
+    grid-row: 1 / span 2;
   }
 }
 
@@ -1377,20 +1449,23 @@ $mark-ratio: calc(552 / 1631);
   transition: color $transition-fast linear;
 
   @include up(md) {
-    grid-column: 2 / 5;
+    grid-column: 2 / 6;
   }
 
   @include up(lg) {
-    grid-column: 7 / 10;
+    grid-column: 7 / 13;
+    grid-row: 1;
   }
 }
 
 // Arabic tag line by default (no tracking); Latin tags go mono.
+// Balanced as a fallback when a line still has to wrap.
 .capability__tags {
   color: var(--muted);
   font-size: $text-small;
   font-weight: $weight-medium;
   line-height: 1.7;
+  text-wrap: balance;
   transition: color $transition-fast linear;
 
   // dir="ltr": keep the Latin line on the RTL (right) edge like the rest.
@@ -1402,11 +1477,12 @@ $mark-ratio: calc(552 / 1631);
   }
 
   @include up(md) {
-    grid-column: 5 / -1;
+    grid-column: 2 / -1;
   }
 
   @include up(lg) {
-    grid-column: 10 / 13;
+    grid-column: 7 / 13;
+    grid-row: 2;
   }
 }
 
@@ -1429,6 +1505,7 @@ $mark-ratio: calc(552 / 1631);
   color: var(--accent);
 }
 
+// Dense typographic matrix: shared 2px rules, names fill their cells.
 .stack-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1451,9 +1528,9 @@ $mark-ratio: calc(552 / 1631);
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-end;
-  gap: $space-2xs;
-  min-height: clamp(9rem, 17vw, 16rem);
-  padding: $space-md $space-sm $space-sm;
+  gap: $space-3xs;
+  min-height: clamp(7.5rem, 12vw, 11rem);
+  padding: $space-xl $space-sm $space-sm;
   background-color: var(--bg);
   container-type: inline-size;
   transition:
@@ -1461,7 +1538,7 @@ $mark-ratio: calc(552 / 1631);
     color $transition-fast linear;
 
   @include up(md) {
-    padding: $space-lg $space-md $space-md;
+    padding: $space-xl $space-md $space-sm;
   }
 
   @include hover {
@@ -1482,9 +1559,9 @@ $mark-ratio: calc(552 / 1631);
 }
 
 .stack-item__name {
-  font-size: clamp(1.15rem, 13cqw, 2.9rem);
-  font-weight: $weight-semibold;
-  line-height: 1.1;
+  font-size: clamp(1.4rem, 16cqw, 5rem);
+  font-weight: $weight-bold;
+  line-height: 1.05;
   white-space: nowrap;
 }
 
@@ -1506,6 +1583,7 @@ $mark-ratio: calc(552 / 1631);
   font-size: clamp(1rem, 8cqw, 1.5rem);
   font-weight: $weight-semibold;
   line-height: 1.55;
+  text-wrap: balance;
 }
 
 // ============================================================
@@ -1515,6 +1593,11 @@ $mark-ratio: calc(552 / 1631);
   isolation: isolate;
   overflow: hidden;
   padding-block: calc(#{$section-pad-block} * 1.25);
+
+  // Dramatic sections breathe: no rule under the head.
+  .section-head {
+    border-block-end: 0;
+  }
 }
 
 .philosophy__mark {
@@ -1524,6 +1607,7 @@ $mark-ratio: calc(552 / 1631);
   z-index: -1;
   height: 112%;
   width: auto;
+  max-width: none; // reset caps svg at 100% → would squash the ratio
   aspect-ratio: 552 / 1631;
   color: $color-navy;
   fill: currentColor;
@@ -1548,9 +1632,12 @@ $mark-ratio: calc(552 / 1631);
 }
 
 // White on a solid black block (black text on blue fails contrast).
+// Pulled out by its padding so the TEXT aligns with the lines above and
+// the block bleeds past the edge.
 .philosophy__title-line--accent {
   width: fit-content;
   margin-block-start: 0.06em;
+  margin-inline-start: -0.15em;
   padding-inline: 0.15em;
   background-color: $color-black;
   color: $color-white;
@@ -1574,6 +1661,7 @@ $mark-ratio: calc(552 / 1631);
   font-weight: $weight-bold;
 }
 
+// 1 → 2 × 2 → (xl) one row of four, where each principle fits one line.
 .principles {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -1585,8 +1673,11 @@ $mark-ratio: calc(552 / 1631);
   }
 
   @include up(lg) {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
     margin-block-start: $space-2xl;
+  }
+
+  @include up(xl) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
@@ -1616,7 +1707,7 @@ $mark-ratio: calc(552 / 1631);
     }
   }
 
-  @include up(lg) {
+  @include up(xl) {
     min-height: 13rem;
 
     & + & {
@@ -1641,13 +1732,27 @@ $mark-ratio: calc(552 / 1631);
   font-weight: $weight-bold;
   line-height: $leading-heading;
   color: $color-white;
+  text-wrap: balance;
+
+  @include up(xl) {
+    font-size: clamp(1.5rem, 1.9vw, 2.25rem);
+  }
 }
 
 // ============================================================
 // 09 / CONTACT
 // ============================================================
 .contact {
-  padding-block: calc(#{$section-pad-block} * 1.2);
+  padding-block: calc(#{$section-pad-block} * 1.2) calc(#{$section-pad-block} * 0.7);
+
+  // Channels published → give the list its own room at the bottom.
+  &:has(.contact__channels:not([hidden])) {
+    padding-block-end: $section-pad-block;
+  }
+
+  .section-head {
+    border-block-end: 0;
+  }
 }
 
 .contact__kicker {
@@ -1771,10 +1876,23 @@ $mark-ratio: calc(552 / 1631);
 // ============================================================
 // 10 / FOOTER
 // ============================================================
+// At least one screen (minus the nav) tall, so the final scroll position
+// is all footer — the nav reads it as blue — and the wordmark still crops
+// at the bottom edge.
 .site-footer {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: $space-xl;
+  min-height: calc(100vh - #{$nav-height-mobile});
+  min-height: calc(100svh - #{$nav-height-mobile});
   overflow: hidden;
   padding-block-start: $space-2xl;
+
+  @include up(lg) {
+    min-height: calc(100vh - #{$nav-height});
+    min-height: calc(100svh - #{$nav-height});
+  }
 }
 
 .site-footer__inner {
@@ -1817,15 +1935,17 @@ $mark-ratio: calc(552 / 1631);
     grid-template-rows: repeat(3, auto);
     grid-auto-columns: minmax(0, 1fr);
     grid-auto-flow: column;
-    gap: $space-2xs $grid-gap;
+    gap: 0 $grid-gap;
+    padding: 0;
     list-style: none;
   }
 }
 
+// Padded rows → ≥ 44px touch targets.
 .site-footer__link {
   display: inline-block;
   margin-inline: -0.2em;
-  padding-inline: 0.2em;
+  padding: 0.5em 0.2em;
   color: $color-white;
   font-size: $text-lead;
   font-weight: $weight-semibold;
@@ -1841,7 +1961,6 @@ $mark-ratio: calc(552 / 1631);
 
   &:focus-visible {
     background-color: $color-black;
-    outline-color: $color-black;
   }
 }
 
@@ -1886,16 +2005,18 @@ $mark-ratio: calc(552 / 1631);
   @include mono-meta;
 }
 
-// Closing artwork: black wordmark, cropped by the footer's bottom edge.
-// Negative margin (percent of footer width) hides ~35% of its height.
+// Closing artwork: black wordmark pushed to the bottom of the footer and
+// cropped by its edge. Negative margin (percent of footer width) hides
+// ~33% of its height.
 .site-footer__mark {
   $mark-width: min(100% - 2 * #{$gutter}, #{$container-max} - 2 * #{$gutter});
 
   display: block;
+  flex-shrink: 0;
   width: $mark-width;
   height: auto;
   aspect-ratio: 1328 / 1084;
-  margin-block: $space-xl calc(#{$mark-width} * -0.33);
+  margin-block: auto calc(#{$mark-width} * -0.33);
   margin-inline: auto;
   color: $color-black;
   fill: currentColor;
