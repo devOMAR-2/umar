@@ -1,3 +1,100 @@
-// base — in progress
+// ============================================================
+// Base — document, themes, focus, a11y utilities.
+// ============================================================
 @use 'variables' as *;
 @use 'mixins' as *;
+
+html {
+  // Default palette so un-themed elements (loader, cursor, menus) resolve vars.
+  @include theme(light);
+
+  scroll-padding-top: $nav-height-mobile;
+  color-scheme: light;
+
+  @include up(lg) {
+    scroll-padding-top: $nav-height;
+  }
+
+  @include motion-ok {
+    scroll-behavior: smooth;
+  }
+
+  &.is-menu-open {
+    overflow: hidden;
+  }
+}
+
+body {
+  background-color: $color-off-white;
+  color: $color-black;
+  overflow-x: clip;
+}
+
+// ---------- Themes ----------
+[data-theme='light'] {
+  @include theme(light);
+}
+
+[data-theme='dark'] {
+  @include theme(dark);
+}
+
+[data-theme='blue'] {
+  @include theme(blue);
+}
+
+// ---------- Focus ----------
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  @include focus-ring(var(--accent), 3px);
+}
+
+// ---------- Icons & sprite ----------
+// Not display:none — <use> references into a display:none sprite can fail
+// to render gradients/masks in some engines. Keep it in the tree, unseen.
+.sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.icon {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 1.05em;
+  height: 1.05em;
+  color: currentColor;
+  fill: currentColor;
+  vertical-align: -0.15em;
+}
+
+// ---------- Accessibility ----------
+.visually-hidden {
+  @include visually-hidden;
+}
+
+.skip-link {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  z-index: z(skip);
+  padding: $space-xs $space-md;
+  background-color: $color-blue;
+  color: $color-white;
+  font-weight: $weight-semibold;
+  line-height: 1.4;
+  text-decoration: none;
+  border: $border-default solid $color-black;
+  transform: translateY(-120%);
+
+  &:focus-visible,
+  &:focus {
+    transform: translateY(0);
+    outline: $border-heavy solid $color-black;
+    outline-offset: 0;
+  }
+}

@@ -1,3 +1,828 @@
-// components — in progress
+// ============================================================
+// Shared components: buttons, text links, header + nav, mobile
+// menu, loader, scroll progress, custom cursor, marquee.
+// All colors come from theme custom properties so each piece
+// adapts to the light / dark / blue section it sits in.
+// ============================================================
 @use 'variables' as *;
 @use 'mixins' as *;
+
+$icon-nudge: 3px;
+$spark-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0c.6 6.6 5.4 11.4 12 12-6.6.6-11.4 5.4-12 12-.6-6.6-5.4-11.4-12-12C6.6 11.4 11.4 6.6 12 0Z'/%3E%3C/svg%3E");
+$menu-duration: 450ms;
+
+// Arrow icons nudge toward the direction they point (hover + keyboard
+// focus). Distance/scale are custom properties so variants can tune them.
+@mixin icon-nudge {
+  --nudge: #{$icon-nudge};
+  --nudge-scale: 1;
+
+  .icon {
+    transition: transform $transition-default $ease-out;
+  }
+
+  @include hover {
+    @include icon-nudge-states;
+  }
+
+  &:focus-visible {
+    @include icon-nudge-states;
+  }
+}
+
+@mixin icon-nudge-states {
+  $n: var(--nudge);
+  $s: var(--nudge-scale);
+
+  .icon:has(use[href='#icon-arrow-out']) {
+    transform: translate(calc(#{$n} * -1), calc(#{$n} * -1)) scale($s);
+  }
+
+  .icon:has(use[href='#icon-arrow-down']) {
+    transform: translateY($n) scale($s);
+  }
+
+  .icon:has(use[href='#icon-arrow-up']) {
+    transform: translateY(calc(#{$n} * -1)) scale($s);
+  }
+
+  .icon:has(use[href='#icon-arrow-forward']) {
+    transform: translateX(calc(#{$n} * -1)) scale($s);
+  }
+}
+
+// ============================================================
+// Buttons
+// Shadow color + offset are custom properties so every variant
+// shares ONE tactile press behaviour (mixins → press).
+// ============================================================
+.button {
+  --btn-offset: #{$shadow-offset};
+  --btn-shadow: var(--shadow);
+
+  @include press(var(--btn-offset), var(--btn-shadow));
+  @include icon-nudge;
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6em;
+  padding: 0.95em 1.35em;
+  border: $border-default solid var(--line);
+  border-radius: $radius-none;
+  font-family: $font-sans;
+  font-size: 1rem;
+  font-weight: $weight-semibold;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+// Blue slab, text in white. Border + shadow follow the section's line color
+// (black on light/blue, off-white on dark) so it always reads as an object.
+.button--primary {
+  --btn-shadow: var(--line);
+
+  background-color: $color-blue;
+  color: $color-white;
+  border-color: var(--line);
+}
+
+.button--secondary {
+  background-color: var(--bg);
+  color: var(--fg);
+  border-color: var(--line);
+
+  @include hover {
+    background-color: var(--surface);
+  }
+}
+
+// Compact, inverted — black on the light/blue nav, off-white on the dark nav.
+.button--nav {
+  --btn-offset: #{$shadow-offset-sm};
+  --btn-shadow: var(--accent);
+
+  gap: 0.5em;
+  padding: 0.55em 1em;
+  background-color: var(--invert-bg);
+  color: var(--invert-fg);
+  border-color: var(--invert-bg);
+  font-size: 0.95rem;
+
+  // Black-on-black shadow would read as a thicker block on the blue nav.
+  [data-nav-theme='blue'] & {
+    --btn-shadow: #{$color-white};
+  }
+}
+
+// The contact CTA: a physical block you want to press.
+.button--giant {
+  --btn-offset: 10px;
+  --btn-shadow: var(--line);
+  // Icon grows as it travels; settles back when pressed.
+  --nudge: 0.1em;
+  --nudge-scale: 1.12;
+
+  gap: 0.4em;
+  padding: 0.45em 0.85em 0.5em;
+  background-color: $color-blue;
+  color: $color-white;
+  border: $border-heavy solid var(--line);
+  font-size: clamp(1.9rem, 5.5vw, 5rem);
+  font-weight: $weight-bold;
+  line-height: $leading-display;
+
+  .icon {
+    width: 0.8em;
+    height: 0.8em;
+  }
+
+  &:active {
+    --nudge: 0.03em;
+    --nudge-scale: 1.04;
+  }
+}
+
+// ============================================================
+// Text link with arrow — 2px accent bar that floods into a solid
+// accent block on hover (white text: passes on blue and black).
+// ============================================================
+.link-arrow {
+  @include icon-nudge;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.1em 0.15em 0.15em;
+  color: var(--fg);
+  font-weight: $weight-semibold;
+  line-height: 1.5;
+  text-decoration: none;
+  background-image: linear-gradient(var(--accent), var(--accent));
+  background-repeat: no-repeat;
+  background-position: right bottom;
+  background-size: 100% $border-default;
+  transition:
+    background-size 220ms $ease-snap,
+    color 220ms linear;
+
+  @include hover {
+    background-size: 100% 100%;
+    color: $color-white;
+  }
+
+  &:focus-visible {
+    background-size: 100% 100%;
+    color: $color-white;
+  }
+}
+
+// ============================================================
+// Site header — fixed nav, re-themed by JS (data-nav-theme).
+// ============================================================
+.site-header {
+  @include theme(light);
+
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline: 0;
+  z-index: z(nav);
+  height: $nav-height-mobile;
+  border-block-end: $border-default solid var(--line);
+  transition:
+    background-color $transition-default linear,
+    color $transition-default linear,
+    border-color $transition-default linear;
+
+  @include up(lg) {
+    height: $nav-height;
+  }
+
+  &[data-nav-theme='dark'] {
+    @include theme(dark);
+  }
+
+  &[data-nav-theme='blue'] {
+    @include theme(blue);
+  }
+
+  html.is-menu-open & {
+    z-index: z(menu) + 1;
+  }
+}
+
+.site-header__inner {
+  @include container;
+
+  display: flex;
+  align-items: stretch;
+  height: 100%;
+}
+
+.site-header__brand {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  padding-inline-end: $space-md;
+  border-inline-end: $border-default solid var(--line);
+  color: var(--accent);
+  text-decoration: none;
+  transition: border-color $transition-default linear, color $transition-default linear;
+
+  &:focus-visible {
+    outline-offset: -$border-heavy;
+  }
+}
+
+.site-header__logo {
+  width: auto;
+  height: 2.5rem;
+  aspect-ratio: 1328 / 1084;
+  fill: currentColor;
+  transition: transform $transition-default $ease-out;
+
+  @include up(lg) {
+    height: 2.75rem;
+  }
+}
+
+.site-header__version {
+  @include mono-meta;
+
+  display: none;
+  padding-inline-start: $space-sm;
+  border-inline-start: $border-default solid var(--line-soft);
+  color: var(--muted);
+  line-height: 1.2;
+
+  @include up(xl) {
+    display: block;
+  }
+}
+
+// ---------- Primary nav (desktop) ----------
+.site-nav {
+  display: none;
+
+  @include up(lg) {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+.site-nav__list {
+  display: flex;
+  height: 100%;
+}
+
+.site-nav__link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding-inline: 1.1em;
+  color: var(--fg);
+  font-size: 0.95rem;
+  font-weight: $weight-semibold;
+  line-height: 1.3;
+  text-decoration: none;
+  // Inverted block rises from the bottom rule on hover.
+  background-image: linear-gradient(var(--fg), var(--fg));
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: 100% 0;
+  transition:
+    background-size 200ms $ease-snap,
+    color 160ms linear;
+
+  // Active marker: accent bar sitting ON the header's bottom rule.
+  &::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: -$border-default;
+    height: 4px;
+    background-color: var(--accent);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform $transition-default $ease-out;
+  }
+
+  @include hover {
+    background-size: 100% 100%;
+    color: var(--bg);
+  }
+
+  &:focus-visible {
+    outline-offset: -$border-heavy;
+  }
+
+  &.is-active::after {
+    transform: scaleX(1);
+  }
+}
+
+.site-header__cta {
+  display: none;
+
+  @include up(lg) {
+    display: inline-flex;
+    align-self: center;
+    margin-inline-start: auto;
+  }
+}
+
+// ---------- Menu toggle (below lg) ----------
+.menu-toggle {
+  display: inline-flex;
+  align-items: center;
+  align-self: center;
+  gap: 0.7em;
+  margin-inline-start: auto;
+  padding: 0.5em 0.85em;
+  border: $border-default solid var(--line);
+  background-color: var(--bg);
+  color: var(--fg);
+  font-size: 0.95rem;
+  font-weight: $weight-semibold;
+  line-height: 1.2;
+  transition:
+    background-color $transition-fast linear,
+    color $transition-fast linear,
+    border-color $transition-default linear;
+
+  @include hover {
+    background-color: var(--fg);
+    color: var(--bg);
+  }
+
+  &:active {
+    background-color: var(--fg);
+    color: var(--bg);
+  }
+
+  @include up(lg) {
+    display: none;
+  }
+}
+
+.menu-toggle__label {
+  min-width: 3.4em; // label swaps القائمة ↔ إغلاق without the box jumping
+  text-align: center;
+}
+
+.menu-toggle__icon {
+  position: relative;
+  display: block;
+  flex-shrink: 0;
+  width: 1.2rem;
+  height: 0.8rem;
+
+  > span {
+    position: absolute;
+    inset-inline: 0;
+    height: $border-default;
+    background-color: currentColor;
+    transition:
+      inset-block-start $transition-default $ease-out,
+      transform $transition-default $ease-out;
+  }
+
+  > span:first-child {
+    inset-block-start: calc(50% - 5px);
+  }
+
+  > span:last-child {
+    inset-block-start: calc(50% + 3px);
+  }
+
+  [aria-expanded='true'] > & > span {
+    inset-block-start: calc(50% - 1px);
+  }
+
+  [aria-expanded='true'] > & > span:first-child {
+    transform: rotate(45deg);
+  }
+
+  [aria-expanded='true'] > & > span:last-child {
+    transform: rotate(-45deg);
+  }
+}
+
+// ============================================================
+// Mobile menu — full-screen dark panel, clipped shut when closed.
+// ============================================================
+.mobile-menu {
+  position: fixed;
+  inset: 0;
+  z-index: z(menu);
+  display: flex;
+  padding-block-start: $nav-height-mobile;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  visibility: hidden;
+  clip-path: inset(0 0 100% 0);
+  transition:
+    clip-path $menu-duration $ease-out,
+    visibility 0s linear $menu-duration;
+
+  &.is-open {
+    visibility: visible;
+    clip-path: inset(0 0 0 0);
+    transition:
+      clip-path $menu-duration $ease-out,
+      visibility 0s linear 0s;
+  }
+
+  @include up(lg) {
+    display: none;
+  }
+}
+
+.mobile-menu__inner {
+  @include container;
+
+  display: flex;
+  flex-direction: column;
+  gap: $space-lg;
+  min-height: 100%;
+  padding-block: $space-md $space-lg;
+}
+
+.mobile-menu__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: $space-sm;
+  padding-block-end: 0.9rem;
+  border-block-end: $border-default solid var(--line);
+}
+
+.mobile-menu__title {
+  font-size: 1.05rem;
+  font-weight: $weight-semibold;
+  line-height: $leading-heading;
+}
+
+.mobile-menu__code {
+  @include mono-meta;
+
+  color: var(--muted);
+}
+
+.mobile-menu__list {
+  > li {
+    border-block-end: $border-default solid var(--line-soft);
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 360ms $ease-out,
+      transform $menu-duration $ease-out;
+  }
+
+  .is-open & > li {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@for $i from 1 through 6 {
+  .mobile-menu.is-open .mobile-menu__list > li:nth-child(#{$i}) {
+    transition-delay: #{100 + ($i - 1) * 55}ms;
+  }
+}
+
+.mobile-menu__link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-sm;
+  padding-block: 0.2em 0.3em;
+  color: var(--fg);
+  font-size: clamp(2.4rem, 11vw, 4.75rem);
+  font-weight: $weight-bold;
+  line-height: $leading-display;
+  text-decoration: none;
+  transition: color $transition-fast linear;
+
+  &:focus-visible {
+    outline-offset: -$border-heavy;
+  }
+
+  &:active {
+    color: var(--accent);
+  }
+
+  @include hover {
+    color: var(--accent);
+
+    .mobile-menu__text {
+      transform: translateX(-0.12em);
+    }
+  }
+}
+
+.mobile-menu__text {
+  transition: transform $transition-default $ease-out;
+}
+
+// Index sits at the far (left) end of the row. 24px+ keeps the blue on
+// black within the WCAG large-text threshold.
+.mobile-menu__index {
+  order: 2;
+  font-family: $font-mono;
+  font-size: 1.5rem;
+  font-weight: $weight-medium;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--accent);
+}
+
+.mobile-menu__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: $space-md;
+  margin-block-start: auto;
+  padding-block-start: $space-md;
+  border-block-start: $border-default solid var(--line);
+}
+
+.mobile-menu__logo {
+  width: 10rem;
+  height: auto;
+  aspect-ratio: 1721 / 724;
+  color: var(--accent);
+  fill: currentColor;
+}
+
+.mobile-menu__meta {
+  color: var(--muted);
+  font-size: $text-small;
+  line-height: 1.6;
+}
+
+// ============================================================
+// Loader — pure CSS, ≤ 1.35s:
+//   0.10–0.65  monogram draws in bottom-up
+//   0.30–0.60  meta fades in
+//   0.15–0.85  blue line sweeps right → left along the bottom edge
+//   0.95–1.35  whole panel lifts away, then stays hidden
+// ============================================================
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: z(loader);
+  display: grid;
+  place-items: center;
+  background-color: $color-black;
+  color: $color-off-white;
+  pointer-events: none;
+  animation: loader-exit 400ms $ease-in-out 950ms forwards;
+
+  @include reduced-motion {
+    display: none;
+  }
+}
+
+.loader__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-md;
+  animation: loader-inner-exit 400ms $ease-in-out 950ms forwards;
+}
+
+.loader__mark {
+  width: auto;
+  height: clamp(7rem, 24vh, 13rem);
+  aspect-ratio: 552 / 1631;
+  fill: currentColor;
+  clip-path: inset(100% 0 0 0);
+  animation: loader-mark 550ms $ease-out 100ms forwards;
+}
+
+.loader__meta {
+  @include mono-meta;
+
+  display: flex;
+  gap: 0.75em;
+  color: $color-gray;
+  opacity: 0;
+  animation: loader-fade 300ms linear 300ms forwards;
+}
+
+.loader__line {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  height: $border-heavy;
+  background-color: $color-blue;
+  transform: scaleX(0);
+  transform-origin: right;
+  animation: loader-line 700ms $ease-in-out 150ms forwards;
+}
+
+// ============================================================
+// Scroll progress (JS writes --progress 0..1)
+// ============================================================
+.scroll-progress {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline: 0;
+  z-index: z(progress);
+  height: $border-heavy;
+  pointer-events: none;
+}
+
+.scroll-progress__bar {
+  display: block;
+  height: 100%;
+  background-color: $color-blue;
+  transform: scaleX(var(--progress, 0));
+  transform-origin: right;
+
+  // Blue on the blue nav would vanish — switch to black there.
+  html:has(.site-header[data-nav-theme='blue']) & {
+    background-color: $color-black;
+  }
+}
+
+// ============================================================
+// Custom cursor (JS-created; fine pointers, ≥ lg, motion OK)
+// ============================================================
+.cursor {
+  display: none;
+}
+
+@media (hover: hover) and (pointer: fine) and (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  html.has-custom-cursor,
+  html.has-custom-cursor a,
+  html.has-custom-cursor button,
+  html.has-custom-cursor label {
+    cursor: none;
+  }
+
+  .cursor {
+    position: fixed;
+    inset-block-start: 0;
+    left: 0; // JS positions with physical x/y
+    z-index: z(cursor);
+    display: block;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+    transition: opacity $transition-fast linear;
+
+    &.is-hidden {
+      opacity: 0;
+    }
+  }
+
+  .cursor__dot {
+    position: absolute;
+    inset-block-start: 0;
+    left: 0;
+    width: 10px;
+    height: 10px;
+    background-color: $color-blue;
+    // Thin off-white edge keeps the square visible on blue sections.
+    outline: 1px solid rgba($color-off-white, 0.85);
+    translate: -50% -50%;
+    transition:
+      width 200ms $ease-out,
+      height 200ms $ease-out,
+      background-color 160ms linear,
+      border-width 160ms linear,
+      scale 140ms $ease-snap,
+      opacity 140ms linear;
+
+    .is-hover & {
+      width: 44px;
+      height: 44px;
+      border: $border-default solid $color-blue;
+      background-color: transparent;
+    }
+
+    .is-down & {
+      scale: 0.7;
+    }
+
+    .has-label & {
+      opacity: 0;
+    }
+  }
+
+  .cursor__label {
+    position: absolute;
+    inset-block-start: 0;
+    left: 0;
+    padding: 0.5em 0.9em 0.55em;
+    background-color: $color-blue;
+    color: $color-white;
+    border: $border-default solid $color-black;
+    font-family: $font-sans;
+    font-size: 0.85rem;
+    font-weight: $weight-semibold;
+    line-height: 1.2;
+    white-space: nowrap;
+    opacity: 0;
+    translate: -50% -50%;
+    scale: 0.6;
+    transition:
+      opacity 160ms linear,
+      scale 220ms $ease-snap;
+
+    &:empty {
+      display: none;
+    }
+
+    .has-label & {
+      opacity: 1;
+      scale: 1;
+    }
+
+    .has-label.is-down & {
+      scale: 0.92;
+    }
+  }
+}
+
+// ============================================================
+// Marquee — two identical groups, track slides one group-width
+// toward the right (the reading flow of RTL) and loops.
+// ============================================================
+$marquee-gap: clamp(1.25rem, 3vw, 3rem);
+
+.marquee {
+  position: relative;
+  overflow: hidden;
+  padding-block: clamp(1rem, 1.8vw, 1.4rem);
+  border-block-start: $border-heavy solid $color-blue;
+}
+
+.marquee__track {
+  display: flex;
+  width: max-content;
+  animation: marquee 40s linear infinite;
+
+  [data-marquee].is-paused & {
+    animation-play-state: paused;
+  }
+
+  @include reduced-motion {
+    width: auto;
+    animation: none;
+  }
+}
+
+.marquee__group {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: $marquee-gap;
+  // Same space after the last spark as between items → seamless seam.
+  padding-inline-end: $marquee-gap;
+
+  @include reduced-motion {
+    flex-wrap: wrap;
+    flex-shrink: 1;
+    justify-content: center;
+    row-gap: $space-2xs;
+    width: 100%;
+    padding-inline: $gutter;
+
+    &[aria-hidden='true'] {
+      display: none;
+    }
+  }
+}
+
+.marquee__item {
+  display: flex;
+  align-items: center;
+  gap: $marquee-gap;
+  color: var(--fg);
+  font-size: clamp(1.5rem, 3.6vw, 3.25rem);
+  font-weight: $weight-semibold;
+  line-height: 1.35;
+  white-space: nowrap;
+
+  &::after {
+    content: '';
+    flex-shrink: 0;
+    width: 0.5em;
+    height: 0.5em;
+    background-color: $color-blue;
+    -webkit-mask: $spark-mask center / contain no-repeat;
+    mask: $spark-mask center / contain no-repeat;
+  }
+}

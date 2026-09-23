@@ -1,3 +1,77 @@
-// responsive — in progress
+// ============================================================
+// Responsive — only cross-cutting adjustments. Component-level
+// breakpoints live next to their component via `up()`.
+// ============================================================
 @use 'variables' as *;
 @use 'mixins' as *;
+
+// Very narrow phones (≤ 359px): tighten the nav chrome so brand + toggle
+// never collide.
+@media (max-width: 359.98px) {
+  .site-header__brand {
+    padding-inline-end: $space-sm;
+  }
+
+  .site-header__logo {
+    height: 2.2rem;
+  }
+
+  .menu-toggle {
+    gap: 0.5em;
+    padding-inline: 0.65em;
+  }
+}
+
+// Windows High Contrast / forced colors: keep structure visible when
+// custom backgrounds and shadows are stripped.
+@media (forced-colors: active) {
+  .button,
+  .menu-toggle {
+    border-color: ButtonText;
+  }
+
+  .link-arrow {
+    text-decoration: underline;
+  }
+
+  .cursor {
+    display: none;
+  }
+}
+
+// ---------- Print ----------
+@media print {
+  .loader,
+  .cursor,
+  .scroll-progress,
+  .site-header,
+  .mobile-menu,
+  .skip-link,
+  .marquee {
+    display: none;
+  }
+
+  html,
+  body,
+  [data-theme] {
+    --bg: #{$color-white};
+    --fg: #{$color-black};
+    --muted: #{$color-gray-dark};
+    --line: #{$color-black};
+
+    background: $color-white;
+    color: $color-black;
+  }
+
+  .js [data-reveal]:not(.is-revealed) {
+    opacity: 1;
+  }
+
+  .section {
+    padding-block: $space-lg;
+  }
+
+  .button {
+    box-shadow: none;
+  }
+}

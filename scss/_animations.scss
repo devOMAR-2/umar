@@ -1,3 +1,112 @@
-// animations — in progress
+// ============================================================
+// Animations — global keyframes, scroll reveal system and the
+// reduced-motion safety net.
+// ============================================================
 @use 'variables' as *;
 @use 'mixins' as *;
+
+$reveal-duration: 700ms;
+$reveal-step: 70ms;
+
+// ---------- Loader ----------
+@keyframes loader-mark {
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes loader-fade {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes loader-line {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes loader-exit {
+  to {
+    transform: translateY(-100%);
+    visibility: hidden;
+  }
+}
+
+@keyframes loader-inner-exit {
+  to {
+    transform: translateY(-12vh);
+    opacity: 0;
+  }
+}
+
+// ---------- Marquee ----------
+// The track is two identical groups wide; moving it by 50% (one group)
+// toward the right lands group two exactly where group one started.
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(50%);
+  }
+}
+
+// ---------- Scroll reveal ----------
+// Driven by an animation on the independent `translate` property (not
+// `transform`/`transition`), so revealed elements keep their own hover
+// transforms and transitions — e.g. the giant contact button.
+// Pre-reveal hiding is scoped to `.js` so no-JS visitors see everything.
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    translate: 0 $reveal-distance;
+  }
+
+  to {
+    opacity: 1;
+    translate: none;
+  }
+}
+
+.js [data-reveal]:not(.is-revealed) {
+  opacity: 0;
+}
+
+.js [data-reveal].is-revealed {
+  animation: reveal-up $reveal-duration $ease-out backwards;
+}
+
+@for $i from 2 through 8 {
+  .js [data-reveal-stagger] > [data-reveal].is-revealed:nth-child(#{$i}) {
+    animation-delay: ($i - 1) * $reveal-step;
+  }
+}
+
+// ---------- Reduced motion ----------
+@include reduced-motion {
+  .js [data-reveal]:not(.is-revealed) {
+    opacity: 1;
+  }
+
+  .js [data-reveal].is-revealed {
+    animation: none;
+  }
+
+  // Safety net for decorative motion anywhere on the page. `:is(#…, html)`
+  // takes the id's specificity (the id never exists), so this outranks
+  // component rules without resorting to !important. Longhands only:
+  // components that opt out entirely still use `animation: none`.
+  :is(#reduced-motion, html) *,
+  :is(#reduced-motion, html) *::before,
+  :is(#reduced-motion, html) *::after {
+    animation-duration: 1ms;
+    animation-delay: 0s;
+    animation-iteration-count: 1;
+    transition-duration: 1ms;
+    transition-delay: 0s;
+    scroll-behavior: auto;
+  }
+}

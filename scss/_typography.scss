@@ -1,3 +1,95 @@
-// typography — in progress
+// ============================================================
+// Typography — global type rules. Arabic first: generous
+// leading, no tracking, Plex Sans Arabic for Latin names too.
+// IBM Plex Mono is reserved for small Latin metadata.
+// ============================================================
 @use 'variables' as *;
 @use 'mixins' as *;
+
+html {
+  font-family: $font-sans;
+  font-size: 100%;
+  font-weight: $weight-regular;
+  line-height: $leading-body;
+  // Kerning + Arabic contextual forms/ligatures stay on (browser default);
+  // optimizeLegibility keeps kerning on for Latin runs as well.
+  text-rendering: optimizeLegibility;
+  font-kerning: normal;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-size: $text-body;
+  line-height: $leading-body;
+  letter-spacing: 0;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: $weight-bold;
+  line-height: $leading-heading;
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+strong,
+b {
+  font-weight: $weight-bold;
+}
+
+// Emphasis is expressed through color/weight in this system, never italics
+// (Arabic has no true italic; synthesized slant looks broken).
+em,
+i {
+  font-style: normal;
+}
+
+small {
+  font-size: $text-small;
+}
+
+// Latin fragments inside Arabic text keep the sans family — Plex Sans Arabic
+// ships a matching Latin subset. Only the mono helpers switch families.
+[lang='en'] {
+  font-family: inherit;
+}
+
+// ---------- Mono helpers ----------
+.mono,
+code,
+kbd,
+samp {
+  font-family: $font-mono;
+  font-variant-numeric: tabular-nums;
+}
+
+.mono-meta {
+  @include mono-meta;
+}
+
+// Key in a key/value meta pair, e.g. hero meta "NAME  عمر الفراج".
+.meta-key {
+  @include mono-meta;
+
+  display: inline-block;
+  color: var(--muted);
+}
+
+// ---------- Selection ----------
+::selection {
+  background-color: $color-blue;
+  color: $color-white;
+}
+
+// On the blue theme the default selection would vanish into the background.
+[data-theme='blue'] ::selection {
+  background-color: $color-black;
+  color: $color-white;
+}
