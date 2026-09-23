@@ -1784,6 +1784,54 @@ $short-desktop: '(min-width: #{map.get($breakpoints, lg)}) and (max-height: 820p
   border-block-start: $border-default solid var(--line);
 }
 
+// Availability — a small status line with a live blue marker.
+.contact__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7em;
+  justify-self: start;
+  padding: 0.45em 0.9em;
+  border: $border-default solid var(--line);
+  font-size: $text-small;
+  font-weight: $weight-semibold;
+  line-height: 1.4;
+
+  @include up(lg) {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+}
+
+.contact__status-dot {
+  position: relative;
+  width: 0.6em;
+  height: 0.6em;
+  background-color: var(--accent);
+
+  @include motion-ok {
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border: $border-thin solid var(--accent);
+      animation: status-ping 2.4s $ease-out infinite;
+    }
+  }
+}
+
+@keyframes status-ping {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  70%,
+  to {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
 .contact__text {
   max-width: 34ch;
   color: var(--muted);
@@ -1792,6 +1840,7 @@ $short-desktop: '(min-width: #{map.get($breakpoints, lg)}) and (max-height: 820p
 
   @include up(lg) {
     grid-column: 1 / 6;
+    grid-row: 2;
   }
 }
 
@@ -1800,6 +1849,7 @@ $short-desktop: '(min-width: #{map.get($breakpoints, lg)}) and (max-height: 820p
 
   @include up(lg) {
     grid-column: 7 / 13;
+    grid-row: 2;
     justify-self: end;
   }
 }

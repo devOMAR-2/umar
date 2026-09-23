@@ -105,7 +105,7 @@ JSON-LD block as `"sameAs": ["https://…"]`.
 ### SEO
 
 All metadata is in the `<head>` of `index.html`: `<title>`, description, canonical, Open Graph, Twitter/X and the
-`Person` JSON-LD. The production domain (`https://devomar.me/`) appears in `canonical`, `og:url`, `og:image`,
+`Person` JSON-LD. The production domain (`https://umar.sa/`) appears in `canonical`, `og:url`, `og:image`,
 `twitter:image` and the JSON-LD `url` — update all five if the domain changes.
 
 ## Deployment

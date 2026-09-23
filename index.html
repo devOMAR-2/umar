@@ -14,7 +14,7 @@
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#f4f3ee">
   <meta name="color-scheme" content="light">
-  <link rel="canonical" href="https://devomar.me/">
+  <link rel="canonical" href="https://umar.sa/">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
@@ -22,8 +22,8 @@
   <meta property="og:site_name" content="عمر الفراج">
   <meta property="og:title" content="عمر الفراج | مهندس برمجيات">
   <meta property="og:description" content="مهندس برمجيات أبني الأنظمة والمنتجات الرقمية وتجارب الويب، من الفكرة إلى المنتج.">
-  <meta property="og:url" content="https://devomar.me/">
-  <meta property="og:image" content="https://devomar.me/assets/og/og-image.png">
+  <meta property="og:url" content="https://umar.sa/">
+  <meta property="og:image" content="https://umar.sa/assets/og/og-image.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="شعار عمر الفراج مع عبارة مهندس برمجيات">
@@ -32,7 +32,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="عمر الفراج | مهندس برمجيات">
   <meta name="twitter:description" content="مهندس برمجيات أبني الأنظمة والمنتجات الرقمية وتجارب الويب، من الفكرة إلى المنتج.">
-  <meta name="twitter:image" content="https://devomar.me/assets/og/og-image.png">
+  <meta name="twitter:image" content="https://umar.sa/assets/og/og-image.png">
   <meta name="twitter:image:alt" content="شعار عمر الفراج مع عبارة مهندس برمجيات">
 
   <!-- Icons -->
@@ -55,7 +55,16 @@
     "name": "Omar Alfarraj",
     "alternateName": "عمر الفراج",
     "jobTitle": "Software Engineer",
-    "url": "https://devomar.me/",
+    "url": "https://umar.sa/",
+    "email": "mailto:omar.alfarraj@yahoo.com",
+    "worksFor": {
+      "@type": "Organization",
+      "name": "Saudi Data and AI Authority (SDAIA)"
+    },
+    "sameAs": [
+      "https://github.com/devOMAR-2",
+      "https://www.linkedin.com/in/omar-alfarraj"
+    ],
     "address": {
       "@type": "PostalAddress",
       "addressLocality": "Riyadh",
@@ -563,10 +572,8 @@
 
     <!-- 09 / Contact
          CONTACT CONFIG — see README "Contact & social links".
-         1. Replace every __EMAIL__ / __GITHUB__ / __LINKEDIN__ placeholder.
-         2. Remove the `hidden` attribute from the <ul> and from each channel you publish.
-         Links that still contain "__" are treated as unconfigured by main.js
-         (aria-disabled, click does nothing) so a placeholder never ships live. -->
+         The big CTA and each channel below are plain links: edit the href and
+         the visible value together. A <li> with the `hidden` attribute is not shown. -->
     <section class="section contact" id="contact" data-theme="dark" aria-labelledby="contact-title">
       <div class="section__inner">
         <header class="section-head" data-reveal>
@@ -582,33 +589,35 @@
         </h2>
 
         <div class="contact__body">
+          <p class="contact__status" data-reveal><span class="contact__status-dot" aria-hidden="true"></span>متاح لمشاريع جديدة</p>
+
           <p class="contact__text" data-reveal>مشروع جديد، نظام يحتاج ترتيب، أو فكرة للحين على الورق — كلّمني عنها.</p>
 
-          <a class="button button--giant contact__cta" href="mailto:__EMAIL__" data-contact-link data-reveal>
+          <a class="button button--giant contact__cta" href="mailto:omar.alfarraj@yahoo.com" data-contact-link data-reveal>
             <span>تواصل معي</span>
             <svg class="icon" aria-hidden="true"><use href="#icon-arrow-out"/></svg>
           </a>
         </div>
 
-        <ul class="contact__channels" aria-label="قنوات التواصل" hidden>
-          <li class="contact__channel" hidden>
-            <a class="contact__channel-link" href="mailto:__EMAIL__" data-contact-link>
+        <ul class="contact__channels" aria-label="قنوات التواصل">
+          <li class="contact__channel">
+            <a class="contact__channel-link" href="mailto:omar.alfarraj@yahoo.com" data-contact-link>
               <span class="contact__channel-label" lang="en">EMAIL</span>
-              <span class="contact__channel-value" lang="en" dir="ltr">__EMAIL__</span>
+              <span class="contact__channel-value" lang="en" dir="ltr">omar.alfarraj@yahoo.com</span>
               <svg class="icon" aria-hidden="true"><use href="#icon-arrow-out"/></svg>
             </a>
           </li>
-          <li class="contact__channel" hidden>
-            <a class="contact__channel-link" href="https://github.com/__GITHUB__" target="_blank" rel="noopener noreferrer" data-contact-link>
+          <li class="contact__channel">
+            <a class="contact__channel-link" href="https://github.com/devOMAR-2" target="_blank" rel="noopener noreferrer" data-contact-link>
               <span class="contact__channel-label" lang="en">GITHUB</span>
-              <span class="contact__channel-value" lang="en" dir="ltr">@__GITHUB__</span>
+              <span class="contact__channel-value" lang="en" dir="ltr">@devOMAR-2</span>
               <svg class="icon" aria-hidden="true"><use href="#icon-arrow-out"/></svg>
             </a>
           </li>
-          <li class="contact__channel" hidden>
-            <a class="contact__channel-link" href="https://www.linkedin.com/in/__LINKEDIN__" target="_blank" rel="noopener noreferrer" data-contact-link>
+          <li class="contact__channel">
+            <a class="contact__channel-link" href="https://www.linkedin.com/in/omar-alfarraj" target="_blank" rel="noopener noreferrer" data-contact-link>
               <span class="contact__channel-label" lang="en">LINKEDIN</span>
-              <span class="contact__channel-value" lang="en" dir="ltr">in/__LINKEDIN__</span>
+              <span class="contact__channel-value" lang="en" dir="ltr">in/omar-alfarraj</span>
               <svg class="icon" aria-hidden="true"><use href="#icon-arrow-out"/></svg>
             </a>
           </li>
