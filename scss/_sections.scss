@@ -222,9 +222,13 @@ $short-desktop: '(min-width: #{map.get($breakpoints, lg)}) and (max-height: 820p
   // the whole hero fits one screen.
   font-size: 18.5vw;
   font-weight: $weight-bold;
-  line-height: 1.15;
+  line-height: 1.24;
   letter-spacing: 0;
   text-wrap: nowrap;
+  // Flex column: the lines' negative margins must not collapse between
+  // siblings, or the enlarged masks would add height.
+  display: flex;
+  flex-direction: column;
 
   @include up(md) {
     grid-column: 1 / 5;
@@ -233,16 +237,17 @@ $short-desktop: '(min-width: #{map.get($breakpoints, lg)}) and (max-height: 820p
 
   @include up(lg) {
     grid-column: 1 / 9;
-    font-size: max(4.5rem, min(#{$text-hero}, (100svh - 24rem) / 3.45));
+    font-size: max(4.5rem, min(#{$text-hero}, (100svh - 24rem) / 3.72));
   }
 }
 
 // Each line is a mask. Padding + matching negative margin grow the clip box
-// so Arabic ascenders (أ ل) and descenders (ج ي) are never cut.
+// so Arabic ascenders (أ ل) and descenders — incl. the dots under ي — are
+// never cut. The boxes overlap their neighbours; they have no background.
 .hero__line {
   display: block;
-  padding-block: 0.14em;
-  margin-block: -0.14em;
+  padding-block: 0.34em;
+  margin-block: -0.34em;
   overflow: hidden;
 }
 
@@ -293,7 +298,7 @@ $short-desktop: '(min-width: #{map.get($breakpoints, lg)}) and (max-height: 820p
 
   .hero__title {
     margin-block: $space-md $space-sm;
-    font-size: max(3.75rem, min(#{$text-hero}, (100svh - 25rem) / 3.45));
+    font-size: max(3.75rem, min(#{$text-hero}, (100svh - 25rem) / 3.72));
   }
 
   .hero__footer {
@@ -305,7 +310,7 @@ $short-desktop: '(min-width: #{map.get($breakpoints, lg)}) and (max-height: 820p
 .hero__art {
   // Visible blue = the column + the bleed into the gutter.
   --visible-w: calc(100cqw + #{$gutter});
-  --mark-h: min(100cqh, var(--visible-w) * 0.86 / #{$mark-ratio});
+  --mark-h: min(88cqh, var(--visible-w) * 0.8 / #{$mark-ratio});
 
   position: relative;
   grid-column: 4 / 5;
@@ -319,13 +324,13 @@ $short-desktop: '(min-width: #{map.get($breakpoints, lg)}) and (max-height: 820p
   border-image: linear-gradient($color-blue, $color-blue) fill 0 / 0 / 0 0 0 100vw;
 
   @include up(md) {
-    --mark-h: min(95cqh, var(--visible-w) * 0.66 / #{$mark-ratio});
+    --mark-h: min(84cqh, var(--visible-w) * 0.62 / #{$mark-ratio});
 
     grid-column: 5 / 7;
   }
 
   @include up(lg) {
-    --mark-h: min(95cqh, var(--visible-w) * 0.6 / #{$mark-ratio});
+    --mark-h: min(80cqh, var(--visible-w) * 0.56 / #{$mark-ratio});
 
     grid-column: 9 / 13;
     grid-row: 1 / 4;
@@ -352,14 +357,15 @@ $short-desktop: '(min-width: #{map.get($breakpoints, lg)}) and (max-height: 820p
   pointer-events: none;
 }
 
+// The whole monogram is always visible, centred in the pillar.
 .hero__mark {
   position: absolute;
-  inset-block-end: calc(var(--mark-h) * -0.1);
+  inset-block: 0;
   inset-inline: 0;
   display: block;
   width: calc(var(--mark-h) * #{$mark-ratio});
   height: var(--mark-h);
-  margin-inline: auto;
+  margin: auto;
   fill: currentColor;
 }
 
@@ -1166,21 +1172,6 @@ $short-desktop: '(min-width: #{map.get($breakpoints, lg)}) and (max-height: 820p
   }
 }
 
-.work__note {
-  max-width: 60ch;
-  margin-block-start: $space-2xl;
-  padding-block-start: $space-md;
-  border-block-start: $border-thin solid var(--line-soft);
-  color: var(--muted);
-  text-wrap: balance;
-
-  .link-arrow {
-    display: flex;
-    width: fit-content;
-    margin-block-start: $space-xs;
-  }
-}
-
 // ============================================================
 // 05 / EXPERIENCE
 // ============================================================
@@ -1600,13 +1591,16 @@ $short-desktop: '(min-width: #{map.get($breakpoints, lg)}) and (max-height: 820p
   }
 }
 
+// Whole monogram, vertically centred; sized by the section height but
+// never wider than the viewport allows.
 .philosophy__mark {
   position: absolute;
-  inset-block-start: -6%;
-  inset-inline-end: -42%;
+  inset-block: 0;
+  inset-inline: 0;
   z-index: -1;
-  height: 112%;
+  height: min(88%, (100vw - 2 * #{$gutter}) / #{$mark-ratio});
   width: auto;
+  margin: auto;
   max-width: none; // reset caps svg at 100% → would squash the ratio
   aspect-ratio: 552 / 1631;
   color: $color-navy;
@@ -1614,9 +1608,9 @@ $short-desktop: '(min-width: #{map.get($breakpoints, lg)}) and (max-height: 820p
   pointer-events: none;
 
   @include up(md) {
-    inset-block-start: -18%;
-    inset-inline-end: -3%;
-    height: 136%;
+    inset-inline-start: auto;
+    inset-inline-end: $gutter;
+    height: 86%;
   }
 }
 
@@ -1762,16 +1756,18 @@ $short-desktop: '(min-width: #{map.get($breakpoints, lg)}) and (max-height: 820p
   line-height: $leading-heading;
 }
 
+// "خلنا نبنيها." on ONE line at every width.
 .contact__title {
   margin-block-start: calc(#{$space-lg} * -0.5);
-  font-size: clamp(4.5rem, 15vw, 15rem);
+  font-size: clamp(3rem, 12.5vw, 13rem);
+  white-space: nowrap;
   font-weight: $weight-bold;
   line-height: $leading-display;
   color: var(--fg);
 }
 
 .contact__title-line {
-  @include stacked-lines;
+  display: inline;
 }
 
 .contact__title-line--accent {
@@ -2005,18 +2001,15 @@ $short-desktop: '(min-width: #{map.get($breakpoints, lg)}) and (max-height: 820p
   @include mono-meta;
 }
 
-// Closing artwork: black wordmark pushed to the bottom of the footer and
-// cropped by its edge. Negative margin (percent of footer width) hides
-// ~33% of its height.
+// Closing artwork: the whole black wordmark, pushed to the bottom of the
+// footer. Width is capped by the viewport height so it always fits whole.
 .site-footer__mark {
-  $mark-width: min(100% - 2 * #{$gutter}, #{$container-max} - 2 * #{$gutter});
-
   display: block;
   flex-shrink: 0;
-  width: $mark-width;
+  width: min(100% - 2 * #{$gutter}, #{$container-max} - 2 * #{$gutter}, 62svh * 1328 / 1084);
   height: auto;
   aspect-ratio: 1328 / 1084;
-  margin-block: auto calc(#{$mark-width} * -0.33);
+  margin-block: auto $gutter;
   margin-inline: auto;
   color: $color-black;
   fill: currentColor;

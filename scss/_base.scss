@@ -5,7 +5,7 @@
 @use 'mixins' as *;
 
 html {
-  // Default palette so un-themed elements (loader, cursor, menus) resolve vars.
+  // Default palette so un-themed elements (loader, menus) resolve vars.
   @include theme(light);
 
   --focus: #{$color-blue};

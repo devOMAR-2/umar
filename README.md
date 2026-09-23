@@ -38,7 +38,7 @@ scss/
   _typography.scss       type defaults, Arabic line-heights, metadata styles
   _base.scss             html/body, theme selectors, focus, skip link, sprite, icons
   _layout.scss           container, 4/6/12-column section grid, section heads
-  _components.scss       buttons, links, navigation, mobile menu, loader, cursor, progress, marquee
+  _components.scss       buttons, links, navigation, mobile menu, loader, progress, marquee
   _sections.scss         hero, about, work + project artwork, experience, capabilities, stack, philosophy, contact, footer
   _animations.scss       keyframes, scroll-reveal system, reduced-motion overrides
   _responsive.scss       cross-cutting responsive tweaks (most queries live beside their component)
@@ -64,7 +64,7 @@ or link works on any background. The navigation takes the theme of the section u
 A single IIFE. Each feature is its own `init…()` function started through `safeInit()`, so one failing feature
 cannot break the others: loader clean-up, nav theme switching, active link, mobile menu (focus trap, ESC, scroll lock),
 anchor focus management, scroll reveal (IntersectionObserver), marquee pause off-screen, scroll progress (rAF),
-custom cursor (fine pointers ≥1024px only), hero logo pointer response (±2°, ±8px),
+hero logo pointer response (±2°, ±8px),
 contact-link guard, Riyadh clock, footer year, external-link `rel` hardening.
 Everything respects `prefers-reduced-motion`; the loader and hero entrance are pure CSS and work without JS.
 
@@ -88,8 +88,8 @@ Everything respects `prefers-reduced-motion`; the loader and hero entrance are p
         alt="وصف عربي للصورة" loading="lazy" decoding="async">
    ```
    (`.project__image` should fill the frame with `object-fit: cover` — add the rule in `_sections.scss` when adding the first screenshot.)
-5. Live link: set the CTA `href` to the real URL, add `target="_blank" rel="noopener noreferrer"`, change the text to
-   `عرض المشروع` and optionally `data-cursor-label="عرض"` for the custom cursor label.
+5. Live link: each CTA (`عرض المشروع`) has a placeholder href such as `__HAMESH_URL__` — replace it with the real URL.
+   Until then `main.js` keeps the link inert (`aria-disabled`), so a placeholder never ships as a live link.
 
 ### Contact & social links
 

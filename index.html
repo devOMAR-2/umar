@@ -279,8 +279,8 @@
          .project-art placeholder or replace it with a real screenshot:
          <img class="project__image" src="assets/projects/NAME.webp"
               width="2400" height="1500" alt="وصف عربي للصورة" loading="lazy">
-         To link a live project, change the CTA href to the real URL and add
-         target="_blank" rel="noopener noreferrer" + data-cursor-label="عرض". -->
+         Project links: replace the __PROJECT_URL__ placeholder in each CTA href.
+         Until then main.js keeps the link inert (aria-disabled). -->
     <section class="section work" id="work" data-theme="dark" aria-labelledby="work-title">
       <div class="section__inner">
         <header class="section-head" data-reveal>
@@ -307,8 +307,8 @@
                 <div class="project__meta-row"><dt>الدور</dt><dd>المنتج والهندسة</dd></div>
                 <div class="project__meta-row"><dt>التقنيات</dt><dd lang="en" dir="ltr">Laravel / Filament / Redis</dd></div>
               </dl>
-              <a class="link-arrow project__cta" href="#contact">
-                <span>اسألني عن المشروع</span>
+              <a class="link-arrow project__cta" href="__RESUME_NEEDED_URL__" target="_blank" rel="noopener noreferrer" data-config-link>
+                <span>عرض المشروع</span>
                 <svg class="icon" aria-hidden="true"><use href="#icon-arrow-out"/></svg>
               </a>
             </div>
@@ -353,8 +353,8 @@
               <dl class="project__meta">
                 <div class="project__meta-row"><dt>النوع</dt><dd>منصة ويب</dd></div>
               </dl>
-              <a class="link-arrow project__cta" href="#contact">
-                <span>اسألني عن المشروع</span>
+              <a class="link-arrow project__cta" href="__HAMESH_URL__" target="_blank" rel="noopener noreferrer" data-config-link>
+                <span>عرض المشروع</span>
                 <svg class="icon" aria-hidden="true"><use href="#icon-arrow-out"/></svg>
               </a>
             </div>
@@ -370,8 +370,8 @@
               <dl class="project__meta">
                 <div class="project__meta-row"><dt>النوع</dt><dd>منصة ألعاب</dd></div>
               </dl>
-              <a class="link-arrow project__cta" href="#contact">
-                <span>اسألني عن المشروع</span>
+              <a class="link-arrow project__cta" href="__TEAMSTEIN_URL__" target="_blank" rel="noopener noreferrer" data-config-link>
+                <span>عرض المشروع</span>
                 <svg class="icon" aria-hidden="true"><use href="#icon-arrow-out"/></svg>
               </a>
             </div>
@@ -390,11 +390,6 @@
             </figure>
           </article>
         </div>
-
-        <p class="work__note" data-reveal>
-          الأنظمة المؤسسية والداخلية ما أقدر أعرضها هنا — أشرحها لك بالتفصيل في مكالمة.
-          <a class="link-arrow" href="#contact"><span>خلنا نتكلم</span><svg class="icon" aria-hidden="true"><use href="#icon-arrow-out"/></svg></a>
-        </p>
       </div>
     </section>
 

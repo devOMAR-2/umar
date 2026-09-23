@@ -9,7 +9,7 @@
  *
  * Features: loader, nav theme, active link (desktop + mobile menu), mobile
  * menu (disclosure + focus trap + ESC), anchor focus, scroll reveal, marquee
- * pause, scroll progress, custom cursor, hero logo tilt, contact placeholders,
+ * pause, scroll progress, hero logo tilt, contact placeholders,
  * Riyadh clock, footer year, external-link rel.
  */
 (function () {
@@ -36,11 +36,9 @@
     brand: '.site-header__brand',
     hero: '.hero',
     heroLogo: '[data-hero-logo]',
-    contactLink: '[data-contact-link]',
+    contactLink: '[data-contact-link], [data-config-link]',
     clock: '[data-clock]',
     year: '[data-year]',
-    cursorInteractive: 'a, button, [role="button"], label',
-    cursorLabel: '[data-cursor-label]',
     focusable:
       'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), ' +
       'textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
@@ -54,7 +52,6 @@
     revealed: 'is-revealed',
     paused: 'is-paused',
     unconfigured: 'is-unconfigured',
-    customCursor: 'has-custom-cursor',
   };
 
   const MENU_LABEL = { closed: 'القائمة', open: 'إغلاق' };
@@ -597,154 +594,6 @@
     }
   }
 
-  /** Custom cursor for fine pointers on desktop (never on touch / reduced motion). */
-  function initCustomCursor() {
-    let cursor = null;
-    let labelEl = null;
-    let controller = null;
-    let rafId = 0;
-    let hasMoved = false;
-    const pos = { x: 0, y: 0 };
-    const target = { x: 0, y: 0 };
-
-    function shouldEnable() {
-      return media.finePointer.matches && media.desktop.matches && !media.reducedMotion.matches;
-    }
-
-    function render() {
-      cursor.style.transform = `translate3d(${pos.x.toFixed(2)}px, ${pos.y.toFixed(2)}px, 0)`;
-    }
-
-    function step() {
-      rafId = 0;
-      if (!cursor) return;
-      pos.x += (target.x - pos.x) * CURSOR_LERP;
-      pos.y += (target.y - pos.y) * CURSOR_LERP;
-      if (Math.abs(target.x - pos.x) < 0.1 && Math.abs(target.y - pos.y) < 0.1) {
-        pos.x = target.x;
-        pos.y = target.y;
-        render();
-        return; // settled — loop stops until the next move
-      }
-      render();
-      rafId = window.requestAnimationFrame(step);
-    }
-
-    function startLoop() {
-      if (!rafId) rafId = window.requestAnimationFrame(step);
-    }
-
-    function updateState(el) {
-      if (!cursor) return;
-      const node = el instanceof Element ? el : null;
-      const labelHost = node ? node.closest(SELECTORS.cursorLabel) : null;
-      cursor.classList.toggle('is-hover', Boolean(node && node.closest(SELECTORS.cursorInteractive)));
-      cursor.classList.toggle('has-label', Boolean(labelHost));
-      const text = labelHost ? labelHost.getAttribute('data-cursor-label') || '' : '';
-      if (labelEl.textContent !== text) labelEl.textContent = text;
-    }
-
-    /** Build the cursor element (lazily, at the first mouse move, so it never sits at 0,0). */
-    function createElement() {
-      cursor = document.createElement('div');
-      cursor.className = 'cursor';
-      cursor.setAttribute('aria-hidden', 'true');
-      const dot = document.createElement('span');
-      dot.className = 'cursor__dot';
-      labelEl = document.createElement('span');
-      labelEl.className = 'cursor__label';
-      cursor.append(dot, labelEl);
-      document.body.appendChild(cursor);
-    }
-
-    function onPointerMove(event) {
-      if (event.pointerType !== 'mouse') return;
-      target.x = event.clientX;
-      target.y = event.clientY;
-      if (!hasMoved) {
-        hasMoved = true;
-        createElement();
-        pos.x = target.x;
-        pos.y = target.y;
-        render();
-        root.classList.add(CLASSES.customCursor);
-        updateState(event.target);
-      }
-      cursor.classList.remove('is-hidden');
-      startLoop();
-    }
-
-    function hide() {
-      if (cursor) cursor.classList.add('is-hidden');
-    }
-
-    function enable() {
-      if (controller) return;
-      controller = new AbortController();
-      const opts = { passive: true, signal: controller.signal };
-
-      document.addEventListener('pointermove', onPointerMove, opts);
-      document.addEventListener(
-        'pointerover',
-        (event) => {
-          if (event.pointerType === 'mouse') updateState(event.target);
-        },
-        opts
-      );
-      document.addEventListener(
-        'pointerout',
-        (event) => {
-          if (!event.relatedTarget) hide();
-        },
-        opts
-      );
-      root.addEventListener('mouseleave', hide, opts);
-      document.addEventListener(
-        'pointerdown',
-        (event) => {
-          if (cursor && event.pointerType === 'mouse') cursor.classList.add('is-down');
-        },
-        opts
-      );
-      document.addEventListener(
-        'pointerup',
-        () => {
-          if (cursor) cursor.classList.remove('is-down');
-        },
-        opts
-      );
-      window.addEventListener(
-        'blur',
-        () => {
-          if (cursor) cursor.classList.remove('is-down');
-        },
-        opts
-      );
-    }
-
-    function destroy() {
-      if (rafId) window.cancelAnimationFrame(rafId);
-      rafId = 0;
-      if (controller) controller.abort();
-      controller = null;
-      if (cursor) cursor.remove();
-      cursor = null;
-      labelEl = null;
-      hasMoved = false;
-      root.classList.remove(CLASSES.customCursor);
-    }
-
-    function sync() {
-      if (shouldEnable()) enable();
-      else destroy();
-    }
-
-    sync();
-    onMediaChange(media.finePointer, sync);
-    onMediaChange(media.desktop, sync);
-    onMediaChange(media.reducedMotion, sync);
-  }
-
   /** Very subtle pointer-driven tilt of the hero monogram (desktop, fine pointer). */
   function initLogoInteraction() {
     const hero = document.querySelector(SELECTORS.hero);
@@ -896,7 +745,7 @@
 
     // Dev-only hint; production stays silent.
     if (isDevHost()) {
-      console.info('[portfolio] Contact links are not configured yet — see README "Contact & social links".');
+      console.info('[portfolio] Some contact/project links are not configured yet — see README.');
     }
   }
 
@@ -983,7 +832,6 @@
     safeInit('scrollReveal', initScrollReveal);
     safeInit('marquee', initMarquee);
     safeInit('scrollProgress', initScrollProgress);
-    safeInit('customCursor', initCustomCursor);
     safeInit('logoInteraction', initLogoInteraction);
     safeInit('contactLinks', initContactLinks);
     safeInit('clock', initClock);

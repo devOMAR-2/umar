@@ -1,6 +1,6 @@
 // ============================================================
 // Shared components: buttons, text links, header + nav, mobile
-// menu, loader, scroll progress, custom cursor, marquee.
+// menu, loader, scroll progress, marquee.
 // All colors come from theme custom properties so each piece
 // adapts to the light / dark / blue section it sits in.
 // ============================================================
@@ -713,106 +713,6 @@ $menu-duration: 450ms;
   // Blue on the blue nav would vanish — switch to black there.
   html:has(.site-header[data-nav-theme='blue']) & {
     background-color: $color-black;
-  }
-}
-
-// ============================================================
-// Custom cursor (JS-created; fine pointers, ≥ lg, motion OK)
-// ============================================================
-.cursor {
-  display: none;
-}
-
-@media (hover: hover) and (pointer: fine) and (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
-  html.has-custom-cursor,
-  html.has-custom-cursor a,
-  html.has-custom-cursor button,
-  html.has-custom-cursor label {
-    cursor: none;
-  }
-
-  .cursor {
-    position: fixed;
-    inset-block-start: 0;
-    left: 0; // JS positions with physical x/y
-    z-index: z(cursor);
-    display: block;
-    width: 0;
-    height: 0;
-    pointer-events: none;
-    transition: opacity $transition-fast linear;
-
-    &.is-hidden {
-      opacity: 0;
-    }
-  }
-
-  .cursor__dot {
-    position: absolute;
-    inset-block-start: 0;
-    left: 0;
-    width: 10px;
-    height: 10px;
-    background-color: $color-blue;
-    // Thin off-white edge keeps the square visible on blue sections.
-    outline: $border-thin solid rgba($color-off-white, 0.85);
-    translate: -50% -50%;
-    transition:
-      width 200ms $ease-out,
-      height 200ms $ease-out,
-      background-color 160ms linear,
-      border-width 160ms linear,
-      scale 140ms $ease-snap,
-      opacity 140ms linear;
-
-    .is-hover & {
-      width: 44px;
-      height: 44px;
-      border: $border-default solid $color-blue;
-      background-color: transparent;
-    }
-
-    .is-down & {
-      scale: 0.7;
-    }
-
-    .has-label & {
-      opacity: 0;
-    }
-  }
-
-  .cursor__label {
-    position: absolute;
-    inset-block-start: 0;
-    left: 0;
-    padding: 0.5em 0.9em 0.55em;
-    background-color: $color-blue;
-    color: $color-white;
-    border: $border-default solid $color-black;
-    font-family: $font-sans;
-    font-size: 0.85rem;
-    font-weight: $weight-semibold;
-    line-height: 1.2;
-    white-space: nowrap;
-    opacity: 0;
-    translate: -50% -50%;
-    scale: 0.6;
-    transition:
-      opacity 160ms linear,
-      scale 220ms $ease-snap;
-
-    &:empty {
-      display: none;
-    }
-
-    .has-label & {
-      opacity: 1;
-      scale: 1;
-    }
-
-    .has-label.is-down & {
-      scale: 0.92;
-    }
   }
 }
 
