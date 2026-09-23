@@ -22,7 +22,7 @@ npm run watch      # sass --watch only
 npm run fonts      # re-copy the woff2 files from @fontsource into assets/fonts
 ```
 
-`css/main.css` is committed, so the site also works by opening `index.html` through any static server.
+`css/main.css` is committed (compressed build), so the site also works by opening `index.html` through any static server.
 
 ## Structure
 
@@ -64,7 +64,7 @@ or link works on any background. The navigation takes the theme of the section u
 A single IIFE. Each feature is its own `init…()` function started through `safeInit()`, so one failing feature
 cannot break the others: loader clean-up, nav theme switching, active link, mobile menu (focus trap, ESC, scroll lock),
 anchor focus management, scroll reveal (IntersectionObserver), marquee pause off-screen, scroll progress (rAF),
-custom cursor (fine pointers ≥1024px only), project pointer parallax, hero logo pointer response (±2°, ±8px),
+custom cursor (fine pointers ≥1024px only), hero logo pointer response (±2°, ±8px),
 contact-link guard, Riyadh clock, footer year, external-link `rel` hardening.
 Everything respects `prefers-reduced-motion`; the loader and hero entrance are pure CSS and work without JS.
 

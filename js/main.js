@@ -6,6 +6,11 @@
  * one through `safeInit()` so a failure in one feature never breaks the rest.
  * Styling lives in SCSS; this file only toggles classes, attributes and CSS
  * custom properties (see "JS <-> CSS hooks" in the build spec).
+ *
+ * Features: loader, nav theme, active link (desktop + mobile menu), mobile
+ * menu (disclosure + focus trap + ESC), anchor focus, scroll reveal, marquee
+ * pause, scroll progress, custom cursor, hero logo tilt, contact placeholders,
+ * Riyadh clock, footer year, external-link rel.
  */
 (function () {
   'use strict';
@@ -28,7 +33,7 @@
     reveal: '[data-reveal]',
     marquee: '[data-marquee]',
     progressBar: '[data-progress-bar]',
-    projectVisual: '[data-project-visual]',
+    brand: '.site-header__brand',
     hero: '.hero',
     heroLogo: '[data-hero-logo]',
     contactLink: '[data-contact-link]',
@@ -59,6 +64,8 @@
   const LOGO_LERP = 0.08;
   const LOGO_MAX_SHIFT = 8; // px
   const LOGO_MAX_ROTATE = 2; // deg
+  const PAGE_END_TOLERANCE = 2; // px
+  const DEV_HOSTS = ['localhost', '127.0.0.1', '[::1]', '::1'];
 
   /* ------------------------------------------------------------------ */
   /* Cached DOM + shared state                                           */
@@ -104,6 +111,49 @@
 
   function clamp(value, min, max) {
     return Math.min(max, Math.max(min, value));
+  }
+
+  /**
+   * One passive, rAF-throttled scroll listener shared by every feature that
+   * needs per-frame scroll work (progress bar, nav theme page-end check).
+   */
+  const scrollFrame = (function () {
+    const subscribers = [];
+    let ticking = false;
+
+    function run() {
+      ticking = false;
+      subscribers.forEach((fn) => fn());
+    }
+
+    function schedule() {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(run);
+    }
+
+    return {
+      /** Run `fn` once per animation frame in which the page scrolled. */
+      subscribe(fn) {
+        subscribers.push(fn);
+        if (subscribers.length === 1) {
+          window.addEventListener('scroll', schedule, { passive: true });
+        }
+      },
+      /** Force all subscribers to run on the next frame (resize, layout change). */
+      schedule,
+    };
+  })();
+
+  /** True when the page is scrolled to (within a couple of px of) its very end. */
+  function isAtPageEnd() {
+    const scrollY = window.scrollY;
+    return scrollY > 0 && scrollY + window.innerHeight >= root.scrollHeight - PAGE_END_TOLERANCE;
+  }
+
+  /** Local development host (dev-only diagnostics). */
+  function isDevHost() {
+    return DEV_HOSTS.includes(window.location.hostname);
   }
 
   /** Preferred scroll behavior for programmatic scrolling. */
@@ -184,6 +234,8 @@
   /**
    * Header theme follows the section under its bottom edge.
    * The observer's root is shrunk to a 1px line at the nav's bottom edge.
+   * Safety net: at the very end of the page the last themed element (the
+   * footer) wins, even if it never reaches the nav line.
    */
   function initNavTheme() {
     if (!header || !supportsIO) return;
@@ -195,15 +247,29 @@
     if (!targets.length) return;
 
     const intersecting = new Set();
+    const lastTarget = targets[targets.length - 1];
     let observer = null;
+    let atEnd = false;
 
     function pickTheme() {
+      if (atEnd) {
+        setPageNavTheme(lastTarget.dataset.theme);
+        return;
+      }
       // Last in document order wins (handles nested themed blocks).
       let current = null;
       targets.forEach((el) => {
         if (intersecting.has(el)) current = el;
       });
       if (current) setPageNavTheme(current.dataset.theme);
+    }
+
+    /** Re-pick only when the page-end state flips (cheap per-frame check). */
+    function checkPageEnd() {
+      const end = isAtPageEnd();
+      if (end === atEnd) return;
+      atEnd = end;
+      pickTheme();
     }
 
     function onIntersect(entries) {
@@ -227,12 +293,27 @@
     }
 
     build();
-    window.addEventListener('resize', debounce(build, RESIZE_DEBOUNCE_MS), { passive: true });
+    atEnd = isAtPageEnd();
+    if (atEnd) pickTheme();
+    scrollFrame.subscribe(checkPageEnd);
+    window.addEventListener(
+      'resize',
+      debounce(() => {
+        build();
+        scrollFrame.schedule();
+      }, RESIZE_DEBOUNCE_MS),
+      { passive: true }
+    );
   }
 
-  /** Highlight the nav link whose section crosses the middle of the viewport. */
+  /**
+   * Highlight the nav links (desktop nav + mobile menu) whose section crosses
+   * the middle of the viewport.
+   */
   function initActiveLink() {
-    const links = Array.from(document.querySelectorAll(SELECTORS.navLink));
+    const links = Array.from(
+      document.querySelectorAll(`${SELECTORS.navLink}, ${SELECTORS.menuLink}`)
+    );
     if (!links.length || !supportsIO) return;
 
     const linkBySection = new Map();
@@ -271,12 +352,16 @@
     linkBySection.forEach((_, section) => observer.observe(section));
   }
 
-  /** Full-screen mobile menu: toggle, focus trap, ESC, link navigation. */
+  /**
+   * Full-screen mobile menu (disclosure pattern: the toggle's aria-expanded /
+   * aria-controls): toggle, focus trap, ESC, link navigation.
+   */
   function initMobileMenu() {
     const toggle = document.querySelector(SELECTORS.menuToggle);
     if (!toggle || !menuEl) return;
 
     const label = toggle.querySelector(SELECTORS.menuToggleLabel);
+    const brand = document.querySelector(SELECTORS.brand);
     const menuLinks = Array.from(menuEl.querySelectorAll(SELECTORS.menuLink));
 
     function getTrapItems() {
@@ -374,8 +459,15 @@
       });
     });
 
+    // Crossing into desktop closes the menu; the toggle is hidden there, so a
+    // focus that was inside the menu (or on the toggle) moves to the brand link
+    // instead of dropping to <body>.
     onMediaChange(media.desktop, (event) => {
-      if (event.matches) close();
+      if (!event.matches || !state.menuOpen) return;
+      const active = document.activeElement;
+      const hadFocus = Boolean(active) && (menuEl.contains(active) || active === toggle);
+      close();
+      if (hadFocus && brand) brand.focus({ preventScroll: true });
     });
 
     state.closeMenu = close;
@@ -473,7 +565,6 @@
     if (!bar) return;
 
     let maxScroll = 1;
-    let ticking = false;
     let lastValue = '';
 
     function measure() {
@@ -481,7 +572,6 @@
     }
 
     function render() {
-      ticking = false;
       const value = clamp(window.scrollY / maxScroll, 0, 1).toFixed(4);
       if (value !== lastValue) {
         lastValue = value;
@@ -489,31 +579,21 @@
       }
     }
 
-    function schedule() {
-      if (ticking) return;
-      ticking = true;
-      window.requestAnimationFrame(render);
+    function remeasure() {
+      measure();
+      scrollFrame.schedule();
     }
 
     measure();
     render();
 
-    window.addEventListener('scroll', schedule, { passive: true });
-    window.addEventListener(
-      'resize',
-      () => {
-        measure();
-        schedule();
-      },
-      { passive: true }
-    );
+    scrollFrame.subscribe(render);
+    window.addEventListener('resize', remeasure, { passive: true });
 
     // Document height changes (fonts, images, reveals) without a window resize.
+    // Scheduling the shared frame also re-runs the nav theme page-end check.
     if ('ResizeObserver' in window) {
-      new ResizeObserver(() => {
-        measure();
-        schedule();
-      }).observe(document.body);
+      new ResizeObserver(remeasure).observe(document.body);
     }
   }
 
@@ -665,54 +745,6 @@
     onMediaChange(media.reducedMotion, sync);
   }
 
-  /** Subtle pointer parallax on project visuals via `--px` / `--py` (-1..1). */
-  function initProjectInteractions() {
-    const visuals = Array.from(document.querySelectorAll(SELECTORS.projectVisual));
-    if (!visuals.length) return;
-
-    function enabled() {
-      return media.finePointer.matches && !media.reducedMotion.matches;
-    }
-
-    visuals.forEach((el) => {
-      let rafId = 0;
-      let clientX = 0;
-      let clientY = 0;
-
-      function update() {
-        rafId = 0;
-        const rect = el.getBoundingClientRect(); // read
-        if (!rect.width || !rect.height) return;
-        const px = clamp(((clientX - rect.left) / rect.width) * 2 - 1, -1, 1);
-        const py = clamp(((clientY - rect.top) / rect.height) * 2 - 1, -1, 1);
-        el.style.setProperty('--px', px.toFixed(3)); // write
-        el.style.setProperty('--py', py.toFixed(3));
-      }
-
-      el.addEventListener(
-        'pointermove',
-        (event) => {
-          if (event.pointerType === 'touch' || !enabled()) return;
-          clientX = event.clientX;
-          clientY = event.clientY;
-          if (!rafId) rafId = window.requestAnimationFrame(update);
-        },
-        { passive: true }
-      );
-
-      el.addEventListener(
-        'pointerleave',
-        () => {
-          if (rafId) window.cancelAnimationFrame(rafId);
-          rafId = 0;
-          el.style.setProperty('--px', '0');
-          el.style.setProperty('--py', '0');
-        },
-        { passive: true }
-      );
-    });
-  }
-
   /** Very subtle pointer-driven tilt of the hero monogram (desktop, fine pointer). */
   function initLogoInteraction() {
     const hero = document.querySelector(SELECTORS.hero);
@@ -724,6 +756,17 @@
     const pointer = { x: 0, y: 0, active: false };
     let rafId = 0;
     let heroVisible = true;
+    // Cached hero geometry: measured on pointerenter, invalidated on resize /
+    // scroll and re-read lazily (at most once per invalidation), never per frame.
+    let rect = null;
+
+    function measure() {
+      rect = hero.getBoundingClientRect();
+    }
+
+    function invalidate() {
+      rect = null;
+    }
 
     function enabled() {
       return media.finePointer.matches && media.desktop.matches && !media.reducedMotion.matches;
@@ -740,7 +783,7 @@
       if (!heroVisible) return;
 
       if (pointer.active) {
-        const rect = hero.getBoundingClientRect(); // read once per frame
+        if (!rect) measure();
         const nx = clamp((pointer.x - (rect.left + rect.width / 2)) / (rect.width / 2 || 1), -1, 1);
         const ny = clamp((pointer.y - (rect.top + rect.height / 2)) / (rect.height / 2 || 1), -1, 1);
         goal.x = nx * LOGO_MAX_SHIFT;
@@ -788,6 +831,17 @@
       current.x = current.y = current.r = 0;
       logo.style.removeProperty('transform');
     }
+
+    hero.addEventListener(
+      'pointerenter',
+      (event) => {
+        if (event.pointerType === 'mouse' && enabled()) measure();
+      },
+      { passive: true }
+    );
+
+    window.addEventListener('resize', invalidate, { passive: true });
+    window.addEventListener('scroll', invalidate, { passive: true });
 
     hero.addEventListener(
       'pointermove',
@@ -840,7 +894,10 @@
       link.addEventListener('click', (event) => event.preventDefault());
     });
 
-    console.info('[portfolio] Contact links are not configured yet — see README "Contact & social links".');
+    // Dev-only hint; production stays silent.
+    if (isDevHost()) {
+      console.info('[portfolio] Contact links are not configured yet — see README "Contact & social links".');
+    }
   }
 
   /** Live Riyadh time (HH:MM), updated on minute boundaries while the tab is visible. */
@@ -865,7 +922,8 @@
       const time = `${pick('hour')}:${pick('minute')}`;
       clocks.forEach((el) => {
         if (el.textContent !== time) el.textContent = time;
-        el.setAttribute('datetime', `${time}+03:00`);
+        // Valid time string (HH:MM); the zone is stated in the visible label.
+        if (el.getAttribute('datetime') !== time) el.setAttribute('datetime', time);
       });
     }
 
@@ -926,7 +984,6 @@
     safeInit('marquee', initMarquee);
     safeInit('scrollProgress', initScrollProgress);
     safeInit('customCursor', initCustomCursor);
-    safeInit('projectInteractions', initProjectInteractions);
     safeInit('logoInteraction', initLogoInteraction);
     safeInit('contactLinks', initContactLinks);
     safeInit('clock', initClock);
